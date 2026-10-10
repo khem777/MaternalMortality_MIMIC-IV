@@ -1,0 +1,5 @@
+# Obtener el número de archivos de una carpeta
+(Get-ChildItem -Path "D:\Emmanuel\Uninorte\Tesis\ModelosPredictivos\postgres_data\csv\hosp\diagnoses_icd" -File).Count
+
+#Obtener el primer registro de un archivo csv
+Get-Content microbiologyevents.csv | Select-Object -First 1

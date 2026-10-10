@@ -1,0 +1,410 @@
+SELECT 
+  p.subject_id,
+  p.gender,
+  p.dob,
+  a.hadm_id,
+  a.admittime,
+  i.stay_id,
+  i.intime AS icu_intime,
+  d.icd_code,
+  dd.long_title
+FROM mimiciv.patients p
+JOIN mimiciv.admissions a 
+  ON p.subject_id = a.subject_id
+JOIN mimiciv.icustays i 
+  ON a.hadm_id = i.hadm_id
+JOIN mimiciv.diagnoses_icd d 
+  ON a.hadm_id = d.hadm_id
+JOIN mimiciv.d_icd_diagnoses dd 
+  ON d.icd_code = dd.icd_code AND d.icd_version = dd.icd_version
+WHERE 
+  a.admittime BETWEEN '2021-10-01' AND '2022-10-31'
+  AND LOWER(dd.long_title) SIMILAR TO '%(pregnan|labor|delivery|obstetric|fetal)%'
+  AND DATE_PART('year', a.admittime) - DATE_PART('year', p.dob) BETWEEN 12 AND 55
+  
+  
+
+create view diagnosticos_embarazos as
+select distinct icd_code, long_title
+from
+(
+select icd_code, long_title
+from   mimiciv.d_icd_diagnoses
+where  long_title ilike '%PREGNANCY%'
+Union
+select icd_code, long_title
+from   mimiciv.d_icd_diagnoses
+where  long_title ilike '%OBSTETRIC%'
+Union
+select icd_code, long_title
+from   mimiciv.d_icd_diagnoses
+where  long_title ilike '%FETAL%'
+Union
+select icd_code, long_title
+from   mimiciv.d_icd_diagnoses
+where  long_title ilike '%DELIVERY%'
+) X
+
+  
+select count(1)
+from   d_icd_diagnoses
+where  long_title ilike '%PREGNANCY%'
+
+--select count(1)
+select *
+from   d_icd_diagnoses
+where  long_title ilike '%OBSTE%'
+
+select count(1)
+from   d_icd_diagnoses
+where  long_title ilike '%fetal%'
+
+select count(1)
+from   d_icd_diagnoses
+where  long_title ilike '%delivery%'
+
+
+select Count(1)
+from 
+(
+select a.subject_id
+       , a.hadm_id
+       , p.dob
+       , (
+	         case when a.deathtime is null 
+	         then (select min(a5.deathtime)
+	               from   admissions a5
+	               where  a5.subject_id = a.subject_id
+	               and    a5.deathtime is not null
+	              )
+	         else a.deathtime
+	         end
+	       ) as deathtime   
+from   admissions a
+join   patients p
+on     a.subject_id = p.subject_id
+Where  TO_CHAR(a.admittime, 'YYYYMM') >= '211001'
+and    TO_CHAR(a.admittime, 'YYYYMM')  <= '221410'
+and    p.gender = 'F'
+and    (a.subject_id, a.hadm_id) In (select d.subject_id, d.hadm_id 		    
+								     from   mimiciv.diagnoses_icd d
+								     where  d.icd_code in (select de.icd_code
+								   	   					   from   mimiciv.diagnosticos_embarazos de
+								   						  )
+								    )
+) X
+--where   X.deathtime is not null
+--where dob is not null
+
+36
+23471
+
+
+23474 -> Mujeres embarazadas en UCI
+23471 -> Con filtro de Gender = 'F'
+36    -> Solo 36 Fallecieron (Si es)
+
+
+
+126   -> Tienen información de nacimiento
+
+
+select did.long_title, count(1)
+from   admissions a 
+join   patients p
+on     a.subject_id = p.subject_id
+join   diagnoses_icd d
+on     a.subject_id  = d.subject_id
+and    a.hadm_id     = d.hadm_id
+join   d_icd_diagnoses did 
+on     d.icd_code    = did.icd_code
+where  a.deathtime is not null
+and    p.gender = 'F'
+and    p.dob is not null
+group by did.long_title
+order by 2 desc
+
+select a.hospital_expire_flag, count(1)
+from   admissions a
+join   patients p
+on     a.subject_id = p.subject_id
+--where  a.deathtime is not null
+--where    p.dob is not null
+group by a.hospital_expire_flag
+
+select count(1)
+from   admissions a
+--where  p.dob is not null
+--where  a.deathtime is not null
+
+
+select count(1)
+from   patients p 
+where  dob is not null
+and    p.subject_id in (select icu.subject_id
+                        from   icustays icu
+                        --where  DATE_PART('day', icu.intime - p.dob) >= -3
+                       )
+
+                       
+select sum(case when DATE_PART('day', X.minimo - X.dob) >= -3 then 1 else 0 end) as suma_minimo_3dias
+      , sum(case when DATE_PART('day', X.maximo - X.dob) >= -3 then 1 else 0 end) as suma_maximo_3dias
+      , sum(case when DATE_PART('day', X.minimo - X.dob) >= -7 then 1 else 0 end) as suma_minimo_7dias
+      , sum(case when DATE_PART('day', X.maximo - X.dob) >= -7 then 1 else 0 end) as suma_maximo_7dias
+      , sum(case when DATE_PART('day', X.minimo - X.dob) >= -15 then 1 else 0 end) as suma_minimo_15dias
+      , sum(case when DATE_PART('day', X.maximo - X.dob) >= -15 then 1 else 0 end) as suma_maximo_15dias
+      , sum(case when DATE_PART('day', X.maximo - X.dob) < 0 then 1 else 0 end) as UCI_Antes_Nacimiento
+      
+      , count(1)
+from 
+(
+select  p.subject_id, p.dob, min(i.intime) as minimo, max(i.intime) as maximo
+from    patients p
+join    icustays i 
+on      i.subject_id = p.subject_id 
+where   p.dob  is not null
+and    TO_CHAR(p.dob, 'YYYYMM')  >= '211001' 
+and    TO_CHAR(p.dob, 'YYYYMM')  <= '221410'
+group by p.subject_id, p.dob
+) X                       
+                       
+
+select  p.subject_id, 
+from    patients p
+join    icustays i 
+on      i.subject_id = p.subject_id
+join    diagnoses_icd di 
+where   p.dob  is not null
+
+
+select dd.long_title, count(1)
+from   admissions a 
+join   patients p
+on     a.subject_id = p.subject_id
+join   diagnoses_icd d
+on     a.subject_id = d.subject_id 
+and    a.hadm_id      = d.hadm_id 
+join   d_icd_diagnoses dd
+on     d.icd_code = dd.icd_code
+where  p.dob  is not null
+and    p.subject_id in (
+                        select subject_id
+                        from   icustays i 
+                        where  DATE_PART('day', i.intime - p.dob) <= 0
+                       )
+group by dd.long_title
+order by 2 desc
+
+
+
+select di.icd_code, dd.long_title, count(1)
+from   admissions a
+join   patients p
+on     a.subject_id  = p.subject_id
+join   diagnoses_icd di 
+on     a.subject_id  = di.subject_id
+and    a.hadm_id     = di.hadm_id
+join   d_icd_diagnoses dd 
+on     di.icd_code  = dd.icd_code
+where  p.dob is not null
+group by di.icd_code, dd.long_title
+--order by 3 desc
+
+
+
+
+
+--select count(1), min(admision_menos_fecha_nac)
+--select admision_menos_fecha_nac, admisiones_registradas, count(1)
+--select K.subject_id, K.admisiones_registradas, K.admision_menos_fecha_nac , K.hadm_id, K.sexo, K.fecha_nacimiento, K.fecha_admision ,K.stay_id, K.fecha_icu
+--select count(1)
+--select K.outcome, count(1) 
+select K.lugar_ingreso_admision, count(1)
+from
+(
+select Y.subject_id
+       ,Y.hadm_id
+       ,Y.stay_id
+       ,Y.fecha_icu
+       ,Y.admisiones_registradas
+       ,Y.gender               as sexo
+       ,Y.dob                  as fecha_nacimiento      
+       ,Y.ethnicity            as etnia
+       ,Y.insurance            as tipo_seguro
+       ,Y.admission_type       as tipo_admision
+       ,Y.admission_location   as lugar_ingreso_admision
+       ,Y.language             as idioma_declaro
+       ,Y.admittime            as fecha_admision
+       ,Y.deathtime            as fecha_muerte       
+       , DATE_PART('day', Y.admittime - Y.dob) admision_menos_fecha_nac
+       ,(
+          case when Y.deathtime is not null then
+	          case when DATE_PART('day', Y.deathtime - Y.dob) <= 28 
+                then 1
+          		else 0
+          	  end
+	          else 0 
+          end
+        ) as outcome
+from 
+(
+	select X.subject_id
+	       ,X.hadm_id 
+	       ,X.admisiones_registradas
+	       ,X.gender               
+	       ,X.dob                  
+	       ,a.ethnicity            
+	       ,a.insurance            
+	       ,a.admission_type       
+	       ,a.admission_location   
+	       ,a.language             
+	       ,a.admittime  
+	       ,(
+	         case when a.deathtime is null 
+	         then (select min(a5.deathtime)
+	               from   admissions a5
+	               where  a5.subject_id = a.subject_id
+	               and    a5.deathtime is not null
+	              )
+	         else a.deathtime
+	         end
+	        ) deathtime   
+	       ,(
+	        	select min(icu.stay_id)
+	        	from   mimiciv.icustays icu
+	        	where  icu.subject_id                 =  X.subject_id
+	        	and    icu.hadm_id                    =  X.hadm_id
+	        	and    date_trunc('day', icu.intime) <=  X.dob 
+	       	) stay_id	  
+	       ,(
+	       		select min(icu.intime)
+		       	from   mimiciv.icustays icu
+		       	where  icu.subject_id  = X.subject_id
+		       	and    icu.hadm_id     = X.hadm_id	
+		       	and    date_trunc('day', icu.intime) <= X.dob 
+		    ) fecha_icu
+	from
+	(
+		select p.subject_id
+		       , p.gender
+		       , p.dob		       
+		       , (
+		       		select Count(1)
+		         	from   admissions a4
+		         	where  a4.subject_id = p.subject_id
+		         ) admisiones_registradas
+		       , (
+		          case when (
+		       				 select Count(1)
+					         from   admissions a4
+					         where  a4.subject_id = p.subject_id					         
+				 	        ) = 1 and p.gender = 'M'
+					  then
+					      (
+				          	select a2.hadm_id
+				          	from   admissions a2 
+				          	where  a2.subject_id = p.subject_id
+				          	and    TO_CHAR(a2.admittime, 'YYYYMM') >= '211001' 
+						  	and    TO_CHAR(a2.admittime, 'YYYYMM')  <= '221410'
+						  	and    DATE_PART('day', a2.admittime - p.dob) between -30 and 28				  
+				          	and    a2.admittime = (
+				          	                       select max(a3.admittime)
+					          					   from   admissions a3
+					          					   where  a3.subject_id = a2.subject_id
+					          					   and    (
+													          select count(1) 
+													          from   mimiciv.icustays icu2
+													          where  icu2.subject_id = a3.subject_id 
+													          and    icu2.hadm_id    = a3.hadm_id          
+													          and    date_trunc('day', icu2.intime) <= p.dob 
+													      ) > 0
+					          					  )
+				          )
+					 when (
+		       				 select Count(1)
+					         from   admissions a4
+					         where  a4.subject_id = p.subject_id
+				 	        ) = 1 and p.gender = 'F'
+					  then
+					      (
+				          	select a2.hadm_id
+				          	from   admissions a2 
+				          	where  a2.subject_id = p.subject_id
+				          	and    TO_CHAR(a2.admittime, 'YYYYMM') >= '211001' 
+						  	and    TO_CHAR(a2.admittime, 'YYYYMM')  <= '221410'
+						  	and    DATE_PART('day', a2.admittime - p.dob) between -30 and 28
+						  	--and    DATE_PART('day', a2.admittime - p.dob) <= 28				  
+				          	and    a2.admittime = (select max(a3.admittime)
+				          						from   admissions a3
+				          						where  a3.subject_id = a2.subject_id
+				          						and    (
+												          select count(1) 
+												          from   mimiciv.icustays icu2
+												          where  icu2.subject_id = a3.subject_id 
+												          and    icu2.hadm_id    = a3.hadm_id          
+												          and    date_trunc('day', icu2.intime) <= p.dob 
+													   ) > 0
+				          						)
+				          	)
+				     else
+					       (
+				          	select a2.hadm_id
+				          	from   admissions a2 
+				          	where  a2.subject_id = p.subject_id
+				          	and    TO_CHAR(a2.admittime, 'YYYYMM') >= '211001' 
+						  	and    TO_CHAR(a2.admittime, 'YYYYMM')  <= '221410'
+						  	--and    DATE_PART('day', a2.admittime - p.dob) <= 28
+						  	and    DATE_PART('day', a2.admittime - p.dob) between -30 and 28				  
+				          	and    a2.admittime = (select max(a3.admittime)
+				          						from   admissions a3
+				          						where  a3.subject_id = a2.subject_id
+				          						and    (
+												          select count(1) 
+												          from   mimiciv.icustays icu2
+												          where  icu2.subject_id = a3.subject_id 
+												          and    icu2.hadm_id    = a3.hadm_id  
+												          and    date_trunc('day', icu2.intime)  <= p.dob
+													   ) > 0
+				          						)
+				          )
+				      end
+		       ) as hadm_id
+		from   patients p
+		where  p.dob is not null
+		and    TO_CHAR(p.dob, 'YYYYMM')  >= '211001' 
+		and    TO_CHAR(p.dob, 'YYYYMM')  <= '221410'	   
+	) X join admissions a
+	on    X.subject_id = a.subject_id 
+	and   X.hadm_id    = a.hadm_id
+	where X.hadm_id is not null
+) Y
+--where DATE_PART('day', Y.admittime - Y.dob) between -1000000 and -30
+--and   admisiones_registradas = 2
+) K
+--where  K.stay_id is not null
+--where  admision_menos_fecha_nac < -30
+--and    admisiones_registradas != 1
+--where admisiones_registradas > 1
+--Where    K.admisiones_registradas = 1 or 
+--         (K.admisiones_registradas >1 and DATE_PART('day', K.fecha_icu  - K.fecha_nacimiento) between -30 and 28)
+--group by admision_menos_fecha_nac, admisiones_registradas
+--order by admision_menos_fecha_nac asc
+--group by K.outcome
+group by K.lugar_ingreso_admision
+
+select a.subject_id, p.dob, a.hadm_id, a.admittime
+from   admissions a
+join   patients p
+on     a.subject_id = p.subject_id
+where  a.subject_id = '10000690'
+
+select * 
+from   icustays i 
+where  i.subject_id = '10000690'
+--and    i.hadm_id    = '26146595'
+
+select max(p.dob)
+from   patients p
+
+2104
+2215

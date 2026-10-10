@@ -1,0 +1,4 @@
+,Brier,Brier skill,mean pred / prevalence,ECE (10 quantile bins),slope,intercept,AUC,AP
+Raw (class-weighted),0.09246,-4.104,13.5147,0.23098,1.04215,-4.03042,0.90193,0.396
+Platt,0.0134,0.26035,1.00165,0.00091,1.00011,-0.00071,0.90106,0.3944
+Isotonic,0.01349,0.2556,0.99925,0.0011,0.96635,-0.08407,0.89532,0.36963
