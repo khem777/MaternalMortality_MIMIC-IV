@@ -43,3 +43,4 @@ article/
 # Local-only folders: working documents and generated figures
 docs/
 figures/
+/article

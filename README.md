@@ -67,7 +67,7 @@ Files with an `_es.sql` suffix are the original Spanish scripts kept as a paper 
 4. **Set your credentials:** copy `.env.example` to `.env` in the project root and fill in your local database password. Check that the file is named `.env` (not `.env.txt`). `.env` is git-ignored and must never be committed.
 5. **Create an environment and install dependencies:**
    ```powershell
-   cd maternal-smm-mimicIV
+   cd MaternalMortality_MIMIC-IV
    python -m venv .venv
    .venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
    pip install -r requirements.txt
