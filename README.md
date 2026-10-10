@@ -47,20 +47,17 @@ libraries/
 notebooks/
   maternal_mortality_models.ipynb   Model A — full pipeline
   maternal_smm_models.ipynb         Model B — full pipeline
-  Recalibration_cell.py             Platt / isotonic recalibration cell (run after the calibration section)
-  Fig_*.png / Fig_*.pdf, Table_*.csv  Figures and aggregate tables produced by the notebooks
 data/
   ethnicity_groups.xlsx, language_groups.xlsx, admission_location_groups.xlsx
                              Code -> group lookup tables (no patient-level data)
+  Table_*.csv                Aggregate result tables written by the notebooks
 scripts/
   generate_maternal_diagnoses_group_sql.py   Generates the diagnosis-group SQL from the mapping
-docs/                        Working notes and methodological documents
-article/                     Manuscript sources (LaTeX) and TRIPOD+AI checklist
 docker-compose.yml           Local PostgreSQL + Jupyter environment
 requirements.txt  .env.example  LICENSE
 ```
 
-Files with an `_es.sql` suffix are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions (see `docs/NAMING.md`).
+Files with an `_es.sql` suffix are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions.
 
 ## Installation and execution
 
@@ -77,9 +74,9 @@ Files with an `_es.sql` suffix are the original Spanish scripts kept as a paper 
    ```
    Select this interpreter as the Jupyter kernel.
 6. **Run the notebooks** top to bottom (Restart & Run All), one model at a time: `maternal_mortality_models.ipynb` (Model A) and `maternal_smm_models.ipynb` (Model B). The SHAP cells are CPU- and memory-intensive; run them only when needed.
-7. **Recalibration:** paste `notebooks/Recalibration_cell.py` into a new cell after the calibration section (it needs `y`, `y_oof` and `LABEL`). It saves `Table_Recalibration_<label>.csv` and `Fig_Recalibration_<label>.pdf/png`.
+7. The recalibration analysis (Platt scaling and isotonic regression) is included in each notebook after the calibration section; it writes `data/Table_Recalibration_<label>.csv` and `figures/Fig_Recalibration_<label>.pdf/png`.
 
-Files written by the notebooks into `data/` (for example `df_*_dataset.xlsx`) are derived, patient-level-adjacent artifacts and are excluded by `.gitignore`. Do not commit them.
+The notebooks write result tables to `data/` and figures to `figures/` (the `figures/` folder is generated locally and is not versioned). Files written into `data/` (for example `df_*_dataset.xlsx`) are derived, patient-level-adjacent artifacts and are excluded by `.gitignore`. Do not commit them.
 
 ## Methodological notes
 
@@ -87,7 +84,7 @@ Files written by the notebooks into `data/` (for example `df_*_dataset.xlsx`) ar
 - Imputation values and scalers were fitted before the train/test split, and cross-validation re-fits hyperparameters tuned on the training split, so estimates may be slightly optimistic.
 - The SMM label is ICD-based and an administrative proxy; the timing of predictors relative to the event was not enforced.
 - Single-center data and no external validation.
-- Reporting follows TRIPOD+AI; the completed checklist is in `article/TRIPOD_AI_checklist.docx`.
+- Reporting follows TRIPOD+AI; the completed checklist is provided as supplementary material of the article.
 
 ## Data access
 

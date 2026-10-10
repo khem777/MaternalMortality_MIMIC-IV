@@ -21,10 +21,7 @@ postgres_data/
 # patient-level-adjacent artifacts and must never be committed. Only the
 # three lookup tables (ethnicity_groups.xlsx, language_groups.xlsx,
 # admission_location_groups.xlsx) belong in data/ and are tracked.
-data/df_cohort_maternal_dataset.xlsx
-data/df_scaled_cohort_maternal_dataset.xlsx
-data/df_cohort_smm_dataset.xlsx
-data/df_scaled_cohort_smm_dataset.xlsx
+data/df*
 
 # Local secrets -- never commit real credentials (the template .env.example is tracked)
 .env.*
@@ -39,3 +36,10 @@ data/df_scaled_cohort_smm_dataset.xlsx
 
 # Local-only copy of the earlier internal README (working notes)
 docs/README_working_notes_OLD.md
+
+# Manuscript, figures for the article and checklist: not part of the repository
+article/
+
+# Local-only folders: working documents and generated figures
+docs/
+figures/
