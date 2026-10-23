@@ -14,7 +14,7 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 - Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts were not modified.
 - Each section names its source. The queries return no individual rows.
 - SMM = severe maternal morbidity; ICU = intensive care unit; DRG = diagnosis-related group; DIC = disseminated intravascular coagulation.
-- The methodological decisions (D1 to D10) are at the end.
+- The methodological decisions (D1 to D11) are at the end.
 
 ## Contents
 
@@ -752,6 +752,7 @@ _Source: `sql/07_revision_predictors/01_predictors_24h.sql`_
 - **D8, admissions with death or discharge before 24 h.** Decided: they are left out of the 24-h model and their events are reported separately. Five of the 10 deaths occur within the first 24 h.
 - **D9, prediction point.** Decided: admission + 24 h; the 28 diagnosis-group indicators (which come from discharge diagnoses) are removed from the main model; ICU admission is measured within the first 24 h instead of the number of stays.
 - **D10, window and ICU variables.** Decided: the predictor window runs from 24 h before admission to 24 h after, because triage values are already available at the prediction point (hemoglobin coverage rises from 53.0% to 81.6%). The 14 variables that exist only in the ICU and ICU admission are left out of the main model and moved to a separate sensitivity analysis.
+- **D11, laboratory tests in the main model.** Decided: the laboratory tests with a value in at least 10% of eligible deliveries enter: hemoglobin (81.6%), hematocrit (81.8%) and creatinine (20.5%). The other ten laboratory tests and the 14 ICU variables go to the sensitivity analysis with missingness indicators. The rule uses only availability, not the outcome, so it adds no leakage. Creatinine is present in 62.9% of SMM cases: it carries a missingness indicator and is reported with and without it. The Role column of Q-F4 reflects the current dictionary; it will be updated with the final dictionary.
 
 ## Sources
 
