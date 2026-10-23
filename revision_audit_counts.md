@@ -14,7 +14,7 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 - Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts were not modified.
 - Each section names its source. The queries return no individual rows.
 - SMM = severe maternal morbidity; ICU = intensive care unit; DRG = diagnosis-related group; DIC = disseminated intravascular coagulation.
-- The methodological decisions (D1 to D11) are at the end.
+- The methodological decisions (D1 to D12) are at the end.
 
 ## Contents
 
@@ -63,6 +63,12 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 - [Q-F3. Timing of the first ICU admission and outcomes](#q-f3-timing-of-the-first-icu-admission-and-outcomes)
 - [Q-F4. Availability of each variable in the predictor window (eligible deliveries, D10 window)](#q-f4-availability-of-each-variable-in-the-predictor-window-eligible-deliveries-d10-window)
 - [Q-F5. Delivery labs: effect of the window from 24 h before admission to 24 h after](#q-f5-delivery-labs-effect-of-the-window-from-24-h-before-admission-to-24-h-after)
+- [Q-G0. Final predictor dictionary and coverage rule (D11)](#q-g0-final-predictor-dictionary-and-coverage-rule-d11)
+- [Q-G1. Availability of the three main laboratory tests by stratum](#q-g1-availability-of-the-three-main-laboratory-tests-by-stratum)
+- [Q-G2. Missingness patterns and redundancy between hemoglobin and hematocrit](#q-g2-missingness-patterns-and-redundancy-between-hemoglobin-and-hematocrit)
+- [Q-G3. Creatinine availability by type of SMM](#q-g3-creatinine-availability-by-type-of-smm)
+- [Q-G4. Distribution of the three laboratory tests and values outside the proposed limits](#q-g4-distribution-of-the-three-laboratory-tests-and-values-outside-the-proposed-limits)
+- [Q-G5. Timing of the first value relative to the admission time](#q-g5-timing-of-the-first-value-relative-to-the-admission-time)
 - [Decisions made on 2026-10-23](#decisions-made-on-2026-10-23)
 
 ### Dataset size and labels by scope
@@ -658,7 +664,7 @@ _Source: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 _Source: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
-| Hours from admission | Deaths in the same admission | Of them, in delivery | With ICU in the first 24 h |
+| Hours from admission | Deaths in the same admission | Of them, in delivery | ICU in the first 24 h |
 |:---|---:|---:|---:|
 | 0 to 6 h | 1 | 0 | 1 |
 | 6 to 12 h | 0 | 0 | 0 |
@@ -740,6 +746,123 @@ _Source: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 **Interpretation.** Accepting values from the 24 h before admission raises hemoglobin coverage from 53.0% to 81.6%, hematocrit from 56.5% to 81.7% and creatinine from 13.1% to 20.4% (all deliveries). 43.7% of the first hemoglobin values and 53.8% of the first creatinine values were taken before the admission time (triage or emergency department), so the timing of the datum relative to the prediction point varies between 48 and 0 hours.
 
+### Q-G0. Final predictor dictionary and coverage rule (D11)
+
+_Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+
+| Variable | Unit | Coverage in eligible deliveries | Final role | Missingness indicator in the main model | Proposed plausibility limits |
+|:---|:---|---:|:---|:---|:---|
+| hemoglobin | g/dL | 81.6% | Main model | No | 3.0–20.0 |
+| creatinine | mg/dL | 20.5% | Main model | Yes | 0.1–20.0 |
+| hematocrit | % | 81.8% | Laboratory sensitivity (redundant with hemoglobin, D12) | No | 10.0–65.0 |
+| glucose | mg/dL | 3.9% | Laboratory sensitivity (coverage below threshold) | No | — |
+| chloride | mEq/L | 3.5% | Laboratory sensitivity (coverage below threshold) | No | — |
+| potassium | mEq/L | 3.5% | Laboratory sensitivity (coverage below threshold) | No | — |
+| sodium | mEq/L | 3.5% | Laboratory sensitivity (coverage below threshold) | No | — |
+| anion_gap | mEq/L | 3.4% | Laboratory sensitivity (coverage below threshold) | No | — |
+| bicarbonate | mEq/L | 3.4% | Laboratory sensitivity (coverage below threshold) | No | — |
+| magnesium | mg/dL | 3.2% | Laboratory sensitivity (coverage below threshold) | No | — |
+| calcium_noionized | mg/dL | 2.7% | Laboratory sensitivity (coverage below threshold) | No | — |
+| phosphorus | mg/dL | 2.6% | Laboratory sensitivity (coverage below threshold) | No | — |
+| lactate | mmol/L | 0.8% | Laboratory sensitivity (coverage below threshold) | No | — |
+| gcs_eye_opening | score | 0.6% | ICU sensitivity only | No | — |
+| gcs_motor_response | score | 0.6% | ICU sensitivity only | No | — |
+| gcs_verbal_response | score | 0.6% | ICU sensitivity only | No | — |
+| heart_rate | beats/min | 0.6% | ICU sensitivity only | No | — |
+| o2_saturation | % | 0.6% | ICU sensitivity only | No | — |
+| respiratory_rate | breaths/min | 0.6% | ICU sensitivity only | No | — |
+| temperature_fahrenheit | deg F | 0.6% | ICU sensitivity only | No | — |
+| weight_admission | kg | 0.6% | ICU sensitivity only | No | — |
+| pressure_blood_diastolic | mmHg | 0.5% | ICU sensitivity only | No | — |
+| pressure_blood_mean | mmHg | 0.5% | ICU sensitivity only | No | — |
+| pressure_blood_systolic | mmHg | 0.5% | ICU sensitivity only | No | — |
+| richmond_ras_scale | score | 0.5% | ICU sensitivity only | No | — |
+| peep_set | cmH2O | 0.3% | ICU sensitivity only | No | — |
+| height | cm | 0.2% | ICU sensitivity only | No | — |
+
+**Interpretation.** The 10% rule leaves three laboratory tests: hemoglobin (81.6%), hematocrit (81.8%) and creatinine (20.5%). Because hemoglobin and hematocrit are redundant (D12), the main model uses hemoglobin and creatinine. The other ten laboratory tests are between 0.8% and 3.9%, and the 14 ICU variables between 0.2% and 0.6%, so they move to the sensitivity analysis. Each laboratory test has a single unit in the window (Q-G6), the same as in the dictionary. The plausibility limits are a proposal pending clinical review.
+
+### Q-G1. Availability of the three main laboratory tests by stratum
+
+_Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+
+| Scope | Stratum | Eligible admissions | With hemoglobin | % hemoglobin | With hematocrit | With creatinine | % creatinine | With all three | With none | % with none |
+|:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Delivery hospitalization (main) | All admissions | 19,383 | 15,822 | 81.6% | 15,846 | 3,971 | 20.5% | 3,969 | 3,536 | 18.2% |
+| Delivery hospitalization (main) | With an ICD-10 diagnosis | 8,864 | 7,220 | 81.5% | 7,234 | 2,094 | 23.6% | 2,093 | 1,629 | 18.4% |
+| Delivery hospitalization (main) | ICD-9 only | 10,519 | 8,602 | 81.8% | 8,612 | 1,877 | 17.8% | 1,876 | 1,907 | 18.1% |
+| Delivery hospitalization (main) | No ICU in the first 24 h | 19,268 | 15,711 | 81.5% | 15,735 | 3,860 | 20.0% | 3,859 | 3,533 | 18.3% |
+| Delivery hospitalization (main) | ICU in the first 24 h | 115 | 111 | 96.5% | 111 | 111 | 96.5% | 110 | 3 | 2.6% |
+| Delivery hospitalization (main) | No SMM | 18,938 | 15,444 | 81.6% | 15,468 | 3,691 | 19.5% | 3,689 | 3,469 | 18.3% |
+| Delivery hospitalization (main) | With SMM | 445 | 378 | 84.9% | 378 | 280 | 62.9% | 280 | 67 | 15.1% |
+| Delivery hospitalization (main) | SMM, acute renal failure as the only indicator | 150 | 125 | 83.3% | 125 | 101 | 67.3% | 101 | 25 | 16.7% |
+| Delivery hospitalization (main) | SMM, two or more indicators | 129 | 109 | 84.5% | 109 | 85 | 65.9% | 85 | 20 | 15.5% |
+| Delivery hospitalization (main) | Died in the same admission | 3 | 3 | 100.0% | 3 | 3 | 100.0% | 3 | 0 | 0.0% |
+| Any obstetric admission | All admissions | 23,625 | 19,188 | 81.2% | 19,222 | 6,613 | 28.0% | 6,585 | 4,379 | 18.5% |
+| Any obstetric admission | With an ICD-10 diagnosis | 10,800 | 8,766 | 81.2% | 8,786 | 3,322 | 30.8% | 3,306 | 1,999 | 18.5% |
+| Any obstetric admission | ICD-9 only | 12,825 | 10,422 | 81.3% | 10,436 | 3,291 | 25.7% | 3,279 | 2,380 | 18.6% |
+| Any obstetric admission | No ICU in the first 24 h | 23,273 | 18,844 | 81.0% | 18,878 | 6,271 | 26.9% | 6,245 | 4,373 | 18.8% |
+| Any obstetric admission | ICU in the first 24 h | 352 | 344 | 97.7% | 344 | 342 | 97.2% | 340 | 6 | 1.7% |
+| Any obstetric admission | No SMM | 22,811 | 18,481 | 81.0% | 18,516 | 6,016 | 26.4% | 5,989 | 4,272 | 18.7% |
+| Any obstetric admission | With SMM | 814 | 707 | 86.9% | 706 | 597 | 73.3% | 596 | 107 | 13.1% |
+| Any obstetric admission | SMM, acute renal failure as the only indicator | 179 | 149 | 83.2% | 149 | 125 | 69.8% | 125 | 30 | 16.8% |
+| Any obstetric admission | SMM, two or more indicators | 223 | 195 | 87.4% | 195 | 171 | 76.7% | 171 | 28 | 12.6% |
+| Any obstetric admission | Died in the same admission | 5 | 5 | 100.0% | 5 | 5 | 100.0% | 5 | 0 | 0.0% |
+
+**Interpretation.** In eligible deliveries, 3,536 admissions (18.2%) have none of the three laboratory tests, and they include 67 of the 445 SMM cases. Hemoglobin barely changes with the outcome or the era: 81.6% without SMM versus 84.9% with SMM, and 81.5% in admissions with an ICD-10 diagnosis versus 81.8% in ICD-9-only. Creatinine does change: 19.5% without SMM and 62.9% with SMM; 20.0% without ICU in 24 h and 96.5% with ICU; 23.6% in ICD-10 and 17.8% in ICD-9-only. That is why creatinine carries a missingness indicator (D11). The 3 deaths have all three laboratory tests.
+
+### Q-G2. Missingness patterns and redundancy between hemoglobin and hematocrit
+
+_Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+
+| Pattern | Admissions | % of eligible deliveries | With SMM |
+|:---|---:|---:|---:|
+| All three | 3,969 | 20.5% | 280 |
+| Hemoglobin and hematocrit, no creatinine | 11,853 | 61.2% | 98 |
+| Hematocrit and creatinine, no hemoglobin | 1 | 0.0% | 0 |
+| Hematocrit only | 23 | 0.1% | 0 |
+| Creatinine only | 1 | 0.0% | 0 |
+| None of the three | 3,536 | 18.2% | 67 |
+
+**Interpretation.** Only 3,969 eligible deliveries (20.5%) have all three laboratory tests, so a complete-case analysis would drop the rest of the admissions and 165 of the 445 eligible SMM cases. Hemoglobin and hematocrit almost always come together, and their correlation is 0.924 (0.945 in SMM): they are nearly redundant. That is why only hemoglobin enters the main model and hematocrit moves to the sensitivity analysis (D12).
+
+### Q-G3. Creatinine availability by type of SMM
+
+_Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+
+| Type | Admissions | With creatinine | % creatinine | With hemoglobin | % hemoglobin | With ICU in 24 h |
+|:---|---:|---:|---:|---:|---:|---:|
+| No SMM | 18,938 | 3,691 | 19.5% | 15,444 | 81.6% | 25 |
+| SMM, acute renal failure as the only indicator | 150 | 101 | 67.3% | 125 | 83.3% | 5 |
+| SMM, one non-renal indicator | 166 | 94 | 56.6% | 144 | 86.7% | 22 |
+| SMM, two or more indicators | 129 | 85 | 65.9% | 109 | 84.5% | 63 |
+
+**Interpretation.** Creatinine is present in 19.5% of admissions without SMM, 56.6% with a single non-renal indicator and 65.9% with two or more. Among those whose only indicator is acute renal failure it reaches 67.3%: one in three has no creatinine in the first 24 h, probably because the diagnosis was made or coded later. Creatinine availability follows severity, so it reflects who was tested and not only its value. Hemoglobin, in contrast, stays between 81.6% and 86.7% in the four groups.
+
+### Q-G4. Distribution of the three laboratory tests and values outside the proposed limits
+
+_Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+
+| Lab | Unit | Values | P1 | P5 | P25 | P50 | P75 | P95 | P99 | Below the lower limit | Above the upper limit |
+|:---|:---|---:|:---|:---|:---|:---|:---|:---|:---|---:|---:|
+| hemoglobin | g/dL | 15,822 | 8.8 | 9.8 | 11.2 | 12.1 | 12.9 | 14.0 | 14.8 | 0 | 0 |
+| hematocrit | % | 15,846 | 27.3 | 30.0 | 33.4 | 35.6 | 37.9 | 41.0 | 43.3 | 0 | 0 |
+| creatinine | mg/dL | 3,971 | 0.4 | 0.4 | 0.5 | 0.6 | 0.7 | 0.9 | 1.3 | 0 | 0 |
+
+**Interpretation.** No value falls outside the proposed limits (0 below and 0 above for the three laboratory tests). Between the 1st and 99th percentiles, hemoglobin ranges from 8.8 to 14.8 g/dL, hematocrit from 27.3 to 43.3 % and creatinine from 0.4 to 1.3 mg/dL. With these data the plausibility limits change no value, and what remains to be defined is percentile clipping fitted only on the training part of each fold.
+
+### Q-G5. Timing of the first value relative to the admission time
+
+_Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+
+| Lab | Values | P10 (hours) | Median (hours) | P90 (hours) | Before admission | % before admission | After 12 h | % after 12 h |
+|:---|---:|:---|:---|:---|---:|---:|---:|---:|
+| hemoglobin | 15,822 | -3.4 | 0.1 | 2.1 | 6,907 | 43.7% | 234 | 1.5% |
+| hematocrit | 15,846 | -3.4 | 0.1 | 2.2 | 6,909 | 43.6% | 252 | 1.6% |
+| creatinine | 3,971 | -6.1 | -0.2 | 10.5 | 2,128 | 53.6% | 339 | 8.5% |
+
+**Interpretation.** The median time of the first value is 0.1 h for hemoglobin and -0.2 h for creatinine, that is, around the admission time (negative hours are before admission). 43.7% of the hemoglobin values and 53.6% of the creatinine values are taken before admission. Only 1.5% of the hemoglobin values and 8.5% of the creatinine values arrive after 12 h, far from the 24-h prediction point.
+
 ## Decisions made on 2026-10-23
 
 - **D1, scope of Model A.** Decided: exploratory feasibility analysis, using the label of death in the same admission. With 10 events, the sample-size calculation will show that it is not enough for a model, and SMM is the main outcome.
@@ -752,7 +875,8 @@ _Source: `sql/07_revision_predictors/01_predictors_24h.sql`_
 - **D8, admissions with death or discharge before 24 h.** Decided: they are left out of the 24-h model and their events are reported separately. Five of the 10 deaths occur within the first 24 h.
 - **D9, prediction point.** Decided: admission + 24 h; the 28 diagnosis-group indicators (which come from discharge diagnoses) are removed from the main model; ICU admission is measured within the first 24 h instead of the number of stays.
 - **D10, window and ICU variables.** Decided: the predictor window runs from 24 h before admission to 24 h after, because triage values are already available at the prediction point (hemoglobin coverage rises from 53.0% to 81.6%). The 14 variables that exist only in the ICU and ICU admission are left out of the main model and moved to a separate sensitivity analysis.
-- **D11, laboratory tests in the main model.** Decided: the laboratory tests with a value in at least 10% of eligible deliveries enter: hemoglobin (81.6%), hematocrit (81.8%) and creatinine (20.5%). The other ten laboratory tests and the 14 ICU variables go to the sensitivity analysis with missingness indicators. The rule uses only availability, not the outcome, so it adds no leakage. Creatinine is present in 62.9% of SMM cases: it carries a missingness indicator and is reported with and without it. The Role column of Q-F4 reflects the current dictionary; it will be updated with the final dictionary.
+- **D11, laboratory tests in the main model.** Decided: the laboratory tests with a value in at least 10% of eligible deliveries enter: hemoglobin (81.6%), hematocrit (81.8%) and creatinine (20.5%). The other ten laboratory tests and the 14 ICU variables go to the sensitivity analysis with missingness indicators. The rule uses only availability, not the outcome, so it adds no leakage. Creatinine is present in 62.9% of SMM cases: it carries a missingness indicator and is reported with and without it. The final dictionary with the role of each variable is in Q-G0.
+- **D12, hemoglobin and hematocrit.** Decided: only hemoglobin enters the main model and hematocrit moves to the sensitivity analysis, because their correlation is 0.924 (0.945 in SMM) and they are almost always measured together. The main model therefore uses hemoglobin and creatinine, with a missingness indicator for creatinine.
 
 ## Sources
 
@@ -760,7 +884,7 @@ _Source: `sql/07_revision_predictors/01_predictors_24h.sql`_
 |:---|:---|
 | `sql/05_revision_audit/` | Audit Q1 to Q21 on the submitted labels |
 | `sql/06_revision_labels/` | Official code lists, delivery flag, same-admission labels, cohort rule and death horizons (Q22, Q23, Q-C1 to Q-C7, Q-D1 to Q-D5, Q-E1 to Q-E4) |
-| `sql/07_revision_predictors/` | Predictors with a 24-h window and their availability (Q-F1 to Q-F5) |
+| `sql/07_revision_predictors/` | Predictors with a 24-h window and their availability (Q-F1 to Q-F5); final predictor dictionary and missingness (Q-G0 to Q-G5) |
 | `notebooks/revision/01_audit_patient_overlap.ipynb` | Patient overlap between training and test (Q24, Q25) |
 
-Queries Q-D0, Q-D2, Q-E0, Q-E2, Q-E3 and Q-F0 are used in the text of the sections and in the revision plan, but have no table of their own here.
+Queries Q-D0, Q-D2, Q-E0, Q-E2, Q-E3, Q-F0 and Q-G6 (units recorded) are used in the text of the sections and in the revision plan, but have no table of their own here.
