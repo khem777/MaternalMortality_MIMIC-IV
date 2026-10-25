@@ -10,11 +10,11 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 
 ## How to read this document
 
-- This is a copy of the count dashboard used during the manuscript revision, generated from the same data (published dashboard, version 18, 2026-10-24).
-- Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts were not modified.
+- This is a copy of the count dashboard used during the manuscript revision, generated from the same data (published dashboard, version 24, 2026-10-25).
+- Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts were not modified. **Key figures of the revised manuscript** summarizes the results of the notebooks in `notebooks/revision/`, which are aggregate outputs only.
 - Each section names its source. The queries return no individual rows.
 - SMM = severe maternal morbidity; ICU = intensive care unit; DRG = diagnosis-related group; DIC = disseminated intravascular coagulation.
-- The methodological decisions (D1 to D12) are at the end.
+- The methodological decisions (D1 to D16) are at the end.
 
 ## Contents
 
@@ -73,7 +73,10 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 - [Q-H2. Profile of the deaths with the revised label](#q-h2-profile-of-the-deaths-with-the-revised-label)
 - [Q-H3. SMM by number of indicators and death in the same admission](#q-h3-smm-by-number-of-indicators-and-death-in-the-same-admission)
 - [Q-H4. SMM indicators carried by the admissions with death](#q-h4-smm-indicators-carried-by-the-admissions-with-death)
+- [Key figures of the revised manuscript](#key-figures-of-the-revised-manuscript)
+- [Q-I1. SMM by anchor-year group and coding version (eligible deliveries)](#q-i1-smm-by-anchor-year-group-and-coding-version-eligible-deliveries)
 - [Decisions made on 2026-10-23](#decisions-made-on-2026-10-23)
+- [Decisions D13 to D16](#decisions-d13-to-d16-validation-framework-and-manuscript)
 
 ### Dataset size and labels by scope
 
@@ -416,7 +419,7 @@ _Source: `sql/06_revision_labels/02_delivery_flag.sql`_
 | Excluded by abortion, ectopic or molar code | 27 |
 | With stillbirth code | 109 |
 
-**Interpretation.** The original flag marked 8,857 deliveries and the new one marks 19,425, that is, 2.2 times more, because it includes deliveries coded in ICD-9 and delivery procedures and DRGs. It adds 10,584 and loses 16: the lost ones also have an abortion, ectopic or molar pregnancy code. Only 18 deliveries depend on the diagnosis and 33 on the DRG alone, so the three sources corroborate each other. The 109 deliveries with a stillbirth code remain as deliveries. The delivery-restricted analysis in the manuscript used the original denominator.
+**Interpretation.** The original flag marked 8,857 deliveries and the new one marks 19,425, that is, 2.2 times more, because it includes deliveries coded in ICD-9 and delivery procedures and DRGs. It adds 10,584 and loses 16: the lost ones also have an abortion, ectopic or molar pregnancy code. Of the 10,584 added, 10,542 are coded in ICD-9-CM and 42 in ICD-10-CM/PCS (the ICD-10 deliveries go from 8,857 to 8,883). Only 18 deliveries depend on the diagnosis and 33 on the DRG alone, so the three sources corroborate each other. The 109 deliveries with a stillbirth code remain as deliveries. The delivery-restricted analysis in the manuscript used the original denominator.
 
 ### Q-C2. SMM in deliveries by coding version
 
@@ -428,6 +431,8 @@ _Source: `sql/06_revision_labels/03_labels_same_admission.sql`_
 | ICD-9 only | 10,542 | 175 | 1.66% | 3 |
 
 **Interpretation.** With the official list, SMM in deliveries is 3.06% in ICD-10-only admissions and 1.66% in ICD-9-only. No admission mixes the two versions. Applying the ICD-9-CM algorithm adds 175 cases that the previous label did not see, but the rate remains lower in ICD-9. These data do not distinguish whether this is under-detection due to coding or a real difference between eras. Restricting to ICD-10 (option b of D4) would leave 272 events in 8,883 deliveries, versus 447 with both versions (1.6 times more). Option (a) keeps more events and the rate does not worsen, so it is retained, with the coding version as a sensitivity variable.
+
+**Population note.** The rates above (3.06% and 1.66%) are among all 19,425 delivery hospitalizations. Among the 19,383 deliveries eligible at 24 h, which are the population of the models and of the main analysis, SMM is 271 of 8,864 (3.06%) in ICD-10-only admissions and 174 of 10,519 (1.65%) in ICD-9-only admissions (Q-I1). They are different populations, and the manuscript states which one each figure refers to.
 
 ### Q-C3. SMM in deliveries by indicator and version
 
@@ -933,6 +938,49 @@ _Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 
 **Interpretation.** The deaths mostly carry indicators of organ support or of a terminal course: ventilation in 6 of the 10, cardiac arrest in 5, ARDS and DIC in 4 each, and shock in 3. Part of the overlap therefore reflects how a fatal course is coded, and not only a clinical relationship between the two outcomes. An admission can carry several indicators.
 
+### Key figures of the revised manuscript
+
+_Source: `notebooks/revision/` (`02_grouped_validation_smm`, `03_resampling_comparison_smm`, `04_creatinine_indicator_sensitivity_smm`, `05_era_temporal_validation_smm`; aggregate outputs `outputs_*.txt`)_
+
+| Figure | Value | Note |
+|:---|:---|:---|
+| Eligible delivery admissions at 24 h | 19,383 | Validation cohort |
+| Patients | 13,710 | |
+| SMM events | 445 | 2.30% of the admissions |
+| Deaths in the same admission | 3 | Not enough to model mortality |
+| AUROC, stacked ensemble | 0.789 (0.765–0.813) | Patient-grouped nested cross-validation, patient-level bootstrap |
+| AUPRC, stacked ensemble | 0.167 (0.138–0.206) | Prevalence 0.023 |
+| AUROC, logistic regression | 0.780 | AUPRC 0.154 |
+| AUROC, XGBoost | 0.791 | AUPRC 0.163 |
+| Ensemble minus logistic regression (AUROC) | +0.009 (0.002–0.016) | No difference from XGBoost |
+| Sensitivity in the top 5% (969 admissions) | 0.354 | PPV 0.163, specificity 0.957 |
+| Sensitivity in the top 10% | 0.517 | PPV 0.119 |
+| AUROC change without the creatinine indicator: logistic regression | −0.085 | Ensemble: −0.013 |
+| Deliveries with an ICU admission in the first 24 h | 115 | 90 with SMM; no discrimination in that stratum |
+| SMM prevalence by anchor-year group | 1.47% (2008–2010) to 5.69% (2020–2022) | Among eligible deliveries, ICD-9-only 1.65% (174 of 10,519) and ICD-10-only 3.06% (271 of 8,864); among all 19,425 delivery hospitalizations, 1.66% and 3.06%. Era and ICD version are aligned |
+| AUROC of the ensemble in the temporal validation (four later blocks) | 0.760–0.807 | Observed/expected 1.34 to 2.12: discrimination holds and calibration shifts |
+| Train on ICD-9, evaluate on ICD-10 (AUROC) | 0.775 (0.745–0.805) | Observed/expected 1.22; calibration slope 0.84 |
+| AUROC change of the ensemble without administrative variables / with the era added | −0.016 / +0.012 | Intervals −0.026 to −0.004 and 0.004 to 0.022 |
+
+**Interpretation.** At 24 h SMM is ranked moderately well, and the gain of the ensemble over logistic regression is small. With 3 deaths in the same admission, mortality is not modeled. In the temporal validation discrimination holds, but calibration shifts as the prevalence rises. The results are exploratory, from a single center and without external validation.
+
+### Q-I1. SMM by anchor-year group and coding version (eligible deliveries)
+
+_Source: `notebooks/revision/05_era_temporal_validation_smm.ipynb` (`outputs_era_temporal.txt`)_
+
+| Group | Eligible deliveries | SMM events | Prevalence |
+|:---|---:|---:|---:|
+| 2008–2010 | 8,212 | 121 | 1.47% |
+| 2011–2013 | 4,328 | 86 | 1.99% |
+| 2014–2016 | 3,569 | 104 | 2.91% |
+| 2017–2019 | 2,343 | 81 | 3.46% |
+| 2020–2022 | 931 | 53 | 5.69% |
+| Coded in ICD-9 only | 10,519 | 174 | 1.65% |
+| Coded in ICD-10 only | 8,864 | 271 | 3.06% |
+| All eligible deliveries | 19,383 | 445 | 2.30% |
+
+**Interpretation.** Prevalence rises with the calendar group, and the two coding versions are aligned with the groups: the first two groups were coded mostly in ICD-9 (81% and 65% of their deliveries), 2014–2016 in both versions (28% in ICD-9, 1,017 of 3,569), and the last two almost entirely in ICD-10. The effect of the coding version cannot be separated from the effect of the period. The 1.65% and 3.06% refer to the 19,383 eligible deliveries; among all 19,425 delivery hospitalizations they are 1.66% and 3.06% (Q-C2).
+
 ## Decisions made on 2026-10-23
 
 - **D1, scope of Model A.** Decided: exploratory feasibility analysis, using the label of death in the same admission. With 10 events, the sample-size calculation will show that it is not enough for a model, and SMM is the main outcome.
@@ -948,6 +996,13 @@ _Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 - **D11, laboratory tests in the main model.** Decided: the laboratory tests with a value in at least 10% of eligible deliveries enter: hemoglobin (81.6%), hematocrit (81.8%) and creatinine (20.5%). The other ten laboratory tests and the 14 ICU variables go to the sensitivity analysis with missingness indicators. The rule uses only availability, not the outcome, so it adds no leakage. Creatinine is present in 62.9% of SMM cases: it carries a missingness indicator and is reported with and without it. The final dictionary with the role of each variable is in Q-G0.
 - **D12, hemoglobin and hematocrit.** Decided: only hemoglobin enters the main model and hematocrit moves to the sensitivity analysis, because their correlation is 0.924 (0.945 in SMM) and they are almost always measured together. The main model therefore uses hemoglobin and creatinine, with a missingness indicator for creatinine.
 
+## Decisions D13 to D16 (validation framework and manuscript)
+
+- **D13, models and imbalance.** Decided: keep the thesis ensemble (random forest, XGBoost, extra trees and logistic regression with a logistic meta-learner) and compare it with logistic regression, without resampling in the main framework.
+- **D14, deliveries with an ICU admission in the first 24 h.** Decided: they stay in the main model (115 admissions), with stratified performance and a sensitivity analysis without them, so that cases are not discarded without temporal evidence.
+- **D15, SMOTE.** Decided: a short comparison in the supplement between no correction, class weights only and SMOTE-NC, each tuned separately, to answer R1-9.
+- **D16, plausibility limits.** Decided: hemoglobin 3 to 20 g/dL, hematocrit 10 to 65% and creatinine 0.1 to 20 mg/dL, plus the sensitivity analysis without the creatinine indicator.
+
 ## Sources
 
 | Origin | Content |
@@ -957,5 +1012,6 @@ _Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 | `sql/07_revision_predictors/` | Predictors with a 24-h window and their availability (Q-F1 to Q-F5); final predictor dictionary and missingness (Q-G0 to Q-G5) |
 | `sql/06_revision_labels/06_smm_death_overlap.sql` | SMM and death in the same admission with the revised labels (Q-H1 to Q-H4) |
 | `notebooks/revision/01_audit_patient_overlap.ipynb` | Patient overlap between training and test (Q24, Q25) |
+| `notebooks/revision/02_grouped_validation_smm.ipynb` to `05_era_temporal_validation_smm.ipynb` | Grouped validation, resampling comparison, creatinine indicator and era/temporal validation (Key figures, Q-I1) |
 
 Queries Q-D0, Q-D2, Q-E0, Q-E2, Q-E3, Q-F0 and Q-G6 (units recorded) are used in the text of the sections and in the revision plan, but have no table of their own here.
