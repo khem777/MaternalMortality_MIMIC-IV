@@ -75,6 +75,7 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 - [Q-H4. SMM indicators carried by the admissions with death](#q-h4-smm-indicators-carried-by-the-admissions-with-death)
 - [Key figures of the revised manuscript](#key-figures-of-the-revised-manuscript)
 - [Q-I1. SMM by anchor-year group and coding version (eligible deliveries)](#q-i1-smm-by-anchor-year-group-and-coding-version-eligible-deliveries)
+- [Q-J1. Timing of the SMM indicators relative to the prediction time](#q-j1-timing-of-the-smm-indicators-relative-to-the-prediction-time)
 - [Decisions made on 2026-10-23](#decisions-made-on-2026-10-23)
 - [Decisions D13 to D16](#decisions-d13-to-d16-validation-framework-and-manuscript)
 
@@ -483,7 +484,7 @@ _Source: `sql/06_revision_labels/03_labels_same_admission.sql`_
 | Not counting renal failure as the only indicator | 297 |
 | Two or more indicators | 130 |
 
-**Interpretation.** If isolated acute renal failure does not count as SMM, events fall from 447 to 297: 150 deliveries (33.6%) have only that indicator. With two or more indicators, 130 remain. The sensitivity analysis of task T50 is necessary, because a third of the outcome depends on a single code.
+**Interpretation.** If isolated acute renal failure does not count as SMM, events fall from 447 to 297: 150 deliveries (33.6%) have only that indicator. With two or more indicators, 130 remain. The sensitivity analysis of task T50 was necessary, because a third of the outcome depends on a single code. It was run in `notebooks/revision/06_smm_renal_only_sensitivity.ipynb` (aggregate output `outputs_excl_renal_only.txt`): among the eligible deliveries 150 of the 445 SMM events have acute renal failure as their only indicator, and without them (19,233 admissions, 13,610 patients, 295 events, 1.53%) the AUROC is 0.792 (0.763-0.819) for logistic regression and 0.795 (0.765-0.822) for the stacked ensemble, the ensemble minus logistic regression difference is +0.004 (-0.002 to 0.010), the AUPRC is 0.103 and 0.110, and the ensemble captures 35.5% (30.7-40.7%) of the events in the top 5%. The discrimination is therefore similar to the main analysis (0.780 and 0.789); the AUPRC is lower because the prevalence falls from 2.30% to 1.53%.
 
 ### Q-C6. Patients with more than one admission
 
@@ -940,7 +941,7 @@ _Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 
 ### Key figures of the revised manuscript
 
-_Source: `notebooks/revision/` (`02_grouped_validation_smm`, `03_resampling_comparison_smm`, `04_creatinine_indicator_sensitivity_smm`, `05_era_temporal_validation_smm`; aggregate outputs `outputs_*.txt`)_
+_Source: `notebooks/revision/` (`02_grouped_validation_smm`, `03_resampling_comparison_smm`, `04_creatinine_indicator_sensitivity_smm`, `05_era_temporal_validation_smm`, `06_smm_renal_only_sensitivity`, `07_smm_timing_vs_prediction_time`; aggregate outputs `outputs_*.txt`)_
 
 | Figure | Value | Note |
 |:---|:---|:---|
@@ -960,6 +961,7 @@ _Source: `notebooks/revision/` (`02_grouped_validation_smm`, `03_resampling_comp
 | SMM prevalence by anchor-year group | 1.47% (2008–2010) to 5.69% (2020–2022) | Among eligible deliveries, ICD-9-only 1.65% (174 of 10,519) and ICD-10-only 3.06% (271 of 8,864); among all 19,425 delivery hospitalizations, 1.66% and 3.06%. Era and ICD version are aligned |
 | AUROC of the ensemble in the temporal validation (four later blocks) | 0.760–0.807 | Observed/expected 1.34 to 2.12: discrimination holds and calibration shifts |
 | Train on ICD-9, evaluate on ICD-10 (AUROC) | 0.775 (0.745–0.805) | Observed/expected 1.22; calibration slope 0.84 |
+| SMM admissions with a procedure indicator certainly before the prediction time | 59 (13.3%) | Another 25 (5.6%) cannot be ordered, 42 (9.4%) have procedure indicators only after it, and 319 (71.7%) rest on diagnosis codes alone (Q-J1) |
 | AUROC change of the ensemble without administrative variables / with the era added | −0.016 / +0.012 | Intervals −0.026 to −0.004 and 0.004 to 0.022 |
 
 **Interpretation.** At 24 h SMM is ranked moderately well, and the gain of the ensemble over logistic regression is small. With 3 deaths in the same admission, mortality is not modeled. In the temporal validation discrimination holds, but calibration shifts as the prevalence rises. The results are exploratory, from a single center and without external validation.
@@ -981,11 +983,37 @@ _Source: `notebooks/revision/05_era_temporal_validation_smm.ipynb` (`outputs_era
 
 **Interpretation.** Prevalence rises with the calendar group, and the two coding versions are aligned with the groups: the first two groups were coded mostly in ICD-9 (81% and 65% of their deliveries), 2014–2016 in both versions (28% in ICD-9, 1,017 of 3,569), and the last two almost entirely in ICD-10. The effect of the coding version cannot be separated from the effect of the period. The 1.65% and 3.06% refer to the 19,383 eligible deliveries; among all 19,425 delivery hospitalizations they are 1.66% and 3.06% (Q-C2).
 
+### Q-J1. Timing of the SMM indicators relative to the prediction time
+
+_Source: `notebooks/revision/07_smm_timing_vs_prediction_time.ipynb` (`outputs_smm_timing.txt`)_
+
+Prediction time T is the admission time plus 24 h. ICD diagnosis codes carry no date, so they cannot be placed relative to T. ICD procedure codes carry only a calendar date (`chartdate`): a procedure is certainly before T if its date plus one day is at or before T, certainly after T if its date is at or after T, and ambiguous otherwise. Each of the 445 SMM admissions among the eligible deliveries falls in one category:
+
+| Category | Without a diagnosis-based indicator | With a diagnosis-based indicator | Admissions | % of SMM |
+|:---|---:|---:|---:|---:|
+| A. A procedure indicator certainly before T | 23 | 36 | 59 | 13.3 |
+| B. None certainly before T, at least one ambiguous | 6 | 19 | 25 | 5.6 |
+| C. Procedure indicators, all certainly after T | 14 | 28 | 42 | 9.4 |
+| D. No procedure indicator (diagnosis codes only; no time) | 0 | 319 | 319 | 71.7 |
+| Total | 43 | 402 | 445 | 100.0 |
+
+Procedure-based indicators (an admission can appear in several columns of the same row):
+
+| Indicator | Before T | Ambiguous | After T | Admissions with the indicator |
+|:---|---:|---:|---:|---:|
+| Hysterectomy | 38 | 13 | 28 | 79 |
+| Ventilation | 27 | 12 | 21 | 60 |
+| Conversion of cardiac rhythm | 0 | 3 | 3 | 6 |
+
+Consistency checks (all as expected): the 42 delivery hospitalizations not eligible at 24 h include 2 SMM and 1 death; of the 10 in-hospital deaths of the obstetric universe, 5 occur before T (1 delivery and 4 other obstetric admissions) and 5 at or after T (3 deliveries and 2 other obstetric).
+
+**Interpretation.** At least 59 SMM admissions (13.3%) had a procedure indicator already recorded before the prediction time, so for them the model partly sees the event it classifies; for 25 (5.6%) the order cannot be established, and 42 (9.4%) have their procedure indicators only after T. For 319 (71.7%) the label rests on diagnosis codes alone and cannot be placed in time. The 126 admissions (28.3%) with a dated procedure indicator are the only ones that allow a timing check. The ventilation row shows 60 admissions with the indicator (27 + 12 + 21), the distinct count; the earlier totals that added the timing columns counted an admission twice when it had two dated procedures. The result supports the wording of the manuscript: the model classifies SMM at 24 h and does not predict its onset (Appendix C, Table A3).
+
 ## Decisions made on 2026-10-23
 
 - **D1, scope of Model A.** Decided: exploratory feasibility analysis, using the label of death in the same admission. With 10 events, the sample-size calculation will show that it is not enough for a model, and SMM is the main outcome.
 - **D2, title.** Decided: reframe with SMM as the main outcome; the final title is set at the end.
-- **D3, prediction point.** Decided: 24-h window for the predictors of both models, with SMM defined per admission (codes carry no timestamp) and the limitation declared.
+- **D3, prediction point.** Decided: 24-h window for the predictors of both models, with SMM defined per admission (diagnosis codes carry no date and procedure codes only a calendar date, so the indicators cannot be placed exactly relative to the 24-h point; Q-J1 quantifies it) and the limitation declared.
 - **D4, ICD-9.** Decided: official CDC algorithm for ICD-9-CM, with the ICD-10-only version as a sensitivity analysis. Q-C2 does not show a worsening: option (a) keeps 1.6 times the events of option (b).
 - **D5, SMM scope.** Decided: delivery hospitalization as the main scope, with 447 events in 19,425 deliveries, and any obstetric admission as a sensitivity analysis (401 cases outside delivery).
 - **D6, cohort rule.** Decided: no position rule, because position 4 or less would exclude 38 SMM cases and 3 deaths from severe admissions. The sensitivity analysis with any obstetric admission requires at least one structured obstetric code in any position.
@@ -1013,5 +1041,7 @@ _Source: `notebooks/revision/05_era_temporal_validation_smm.ipynb` (`outputs_era
 | `sql/06_revision_labels/06_smm_death_overlap.sql` | SMM and death in the same admission with the revised labels (Q-H1 to Q-H4) |
 | `notebooks/revision/01_audit_patient_overlap.ipynb` | Patient overlap between training and test (Q24, Q25) |
 | `notebooks/revision/02_grouped_validation_smm.ipynb` to `05_era_temporal_validation_smm.ipynb` | Grouped validation, resampling comparison, creatinine indicator and era/temporal validation (Key figures, Q-I1) |
+| `notebooks/revision/06_smm_renal_only_sensitivity.ipynb` | Sensitivity without admissions whose only SMM indicator is acute renal failure (Q-C5, T50) |
+| `notebooks/revision/07_smm_timing_vs_prediction_time.ipynb` | Timing of the SMM indicators relative to the prediction time (Q-J1, T52) |
 
 Queries Q-D0, Q-D2, Q-E0, Q-E2, Q-E3, Q-F0 and Q-G6 (units recorded) are used in the text of the sections and in the revision plan, but have no table of their own here.

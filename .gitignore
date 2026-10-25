@@ -45,5 +45,5 @@ docs/
 figures/
 /article
 
-# Aggregate text reports written by notebooks/revision (local only)
-notebooks/revision/outputs_*.txt
+# Aggregate text reports written by notebooks/revision (counts and metrics only) are PUBLISHED on purpose;
+# the notebooks never write identifiers or rows. Check each new outputs_*.txt before committing it.

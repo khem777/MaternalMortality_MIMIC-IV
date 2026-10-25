@@ -62,6 +62,8 @@ notebooks/
     03_resampling_comparison_smm.ipynb           No correction vs class weights vs SMOTE-NC
     04_creatinine_indicator_sensitivity_smm.ipynb  With and without the creatinine missingness indicator
     05_era_temporal_validation_smm.ipynb         Calendar era, ICD version and temporal validation
+    06_smm_renal_only_sensitivity.ipynb          Sensitivity without admissions whose only SMM indicator is acute renal failure
+    07_smm_timing_vs_prediction_time.ipynb       Counts: timing of procedure-based SMM indicators relative to the 24-h prediction point
     outputs_*.txt                                Aggregate outputs of these notebooks (no patient-level data)
 libraries/
   database.py                Connection (environment variables) and query functions
@@ -79,7 +81,7 @@ requirements.txt  .env.example  LICENSE
 
 Files with an `_es.sql` suffix (and the Spanish-named scripts) are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions.
 
-The outputs in `notebooks/revision/outputs_*.txt` are, one per analysis: `main` (main analysis), `no_indicator`, `resampling`, `era_temporal`, and the sensitivity analyses `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, plus `modelA` (death feasibility).
+The aggregate outputs `notebooks/revision/outputs_*.txt` (counts and metrics only; no identifiers or patient-level rows) are published with the code. Some of the earlier notebooks state in their header that these files are git-ignored; that note predates the decision to publish them. They are, one per analysis: `main` (main analysis), `no_indicator`, `resampling`, `era_temporal`, and the sensitivity analyses `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, plus `modelA` (death feasibility).
 
 ## Installation and execution
 
@@ -99,13 +101,13 @@ The outputs in `notebooks/revision/outputs_*.txt` are, one per analysis: `main` 
    pip install -r requirements.txt
    ```
    Select this interpreter as the Jupyter kernel.
-6. **Run the revision notebooks** in `notebooks/revision/` top to bottom (Restart & Run All), starting with `02_grouped_validation_smm.ipynb` (main analysis); `03` to `05` use the same partitions and settings. The nested validation with bootstrap is computationally heavy.
+6. **Run the revision notebooks** in `notebooks/revision/` top to bottom (Restart & Run All), starting with `02_grouped_validation_smm.ipynb` (main analysis); `03` to `06` use the same partitions and settings (`07` only counts events and trains no model). The nested validation with bootstrap is computationally heavy.
 
 Notebooks print aggregate results only. Files written into `data/` (for example `df_*_dataset.xlsx`) are derived, patient-level-adjacent artifacts and are excluded by `.gitignore`. Do not commit them.
 
 ## Methodological notes
 
-- Prediction time is 24 hours after admission, and only admissions still in hospital at that time enter the main analysis (events before 24 h are reported separately). The SMM label, however, is an admission-level classification from ICD codes, which carry no timestamp: the model classifies SMM at 24 h; it does not predict its onset.
+- Prediction time is 24 hours after admission, and only admissions still in hospital at that time enter the main analysis (events before 24 h are reported separately). The SMM label, however, is an admission-level classification from ICD codes, which carry no date for diagnoses and only a calendar date for procedures: the model classifies SMM at 24 h; it does not predict its onset. Notebook 07 quantifies the timing of the procedure-based indicators (59 of the 445 eligible SMM admissions, 13.3%, have one certainly before the prediction time; 319, 71.7%, rest on diagnosis codes alone).
 - All splits are grouped by patient, so no patient appears on both sides. Imputation, scaling, hyperparameter tuning, stacking and recalibration are fitted inside the training part of each fold.
 - The SMM label is an administrative proxy and has not been validated against chart review in MIMIC-IV. The rate rises with calendar period and is aligned with the change from ICD-9-CM to ICD-10-CM/PCS, so the effect of coding and period cannot be separated.
 - Single-center data and no external validation. The temporal validation uses later patients of the same hospital.
