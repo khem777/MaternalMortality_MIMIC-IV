@@ -2,10 +2,16 @@
 -- 06_revision_labels / 03b_reconcile_old_labels.sql
 -- Reconcile the SMM label of the SUBMITTED dataset with the original view
 -- ============================================================================
--- Why: Q-C4 shows that the ORIGINAL view (mimiciv.hadm_with_smm) flags 405
---   admissions in this universe (389 + 16), whereas the submitted dataset
---   (mimiciv.cohort_smm_dataset, outcome_smm = 1) has 475.  The 70-admission
---   gap must be explained before the response letter says "from 475 to 848".
+-- Why: before the response letter says "from 475 to 848", the 475 SMM admissions
+--   of the submitted dataset (mimiciv.cohort_smm_dataset, outcome_smm = 1) must be
+--   reconciled with the original view (mimiciv.hadm_with_smm) and with the new
+--   label.  Q-C4 splits the two lists into 459 admissions in both, 389 only in the
+--   official list and 16 only in the original one (original = 459 + 16 = 475).
+--   Result (Q23, revision_audit_counts.md): all 475 positives of the dataset come
+--   from the original view (459 also in the new label, 16 only in the original),
+--   so there is no gap between the dataset and the view to explain.  (An earlier
+--   version of this note read "405 admissions (389 + 16)" and a 70-admission gap;
+--   that was an arithmetic slip, corrected on 2026-10-25.)
 --   Read-only: SELECTs only, aggregate counts only.
 -- ============================================================================
 

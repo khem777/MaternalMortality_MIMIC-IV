@@ -1,4 +1,14 @@
 -- ============================================================================
+-- ESTADO (2026-10-25): diagnóstico HISTÓRICO, no es parte del análisis enviado ni del revisado
+-- ============================================================================
+-- Embudo exploratorio escrito al depurar una cohorte anterior (384 filas). El
+-- filtro de fechas ('211001' a '221410') y el requisito de UCI que prueba NO se
+-- usan en la cohorte del manuscrito enviado ni en la revisión (ver
+-- cohorte_materna_ampliada.sql y sql/06_revision_labels/).
+-- Solo se editaron comentarios en este archivo; no se cambió ninguna sentencia SQL.
+-- ============================================================================
+
+-- ============================================================================
 -- DIAGNÓSTICO: por qué mimiciv.cohort_maternal solo tiene 384 filas
 -- ============================================================================
 -- No puedo ejecutar esto contra tu base real (solo accesible desde tu

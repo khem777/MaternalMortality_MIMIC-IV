@@ -1,4 +1,20 @@
 -- ============================================================================
+-- STATUS (2026-10-25): this script defines the labels of the SUBMITTED manuscript
+-- ============================================================================
+-- It was run on the local database and produced the 475 SMM admissions of the
+-- submitted version. Two limitations of that version are known and fixed in the
+-- revision, so do not use this script for the revised analysis:
+--   (1) SMM codes: ICD-10-CM/PCS only. MIMIC-IV has ICD-9-CM diagnoses and
+--       procedures until 2015, so ICD-9 admissions were counted as SMM-negative.
+--   (2) Delivery flag: ICD-10 Z37/O80/O82 only; 8,857 deliveries, against 19,425
+--       with the revised flag (diagnoses, procedures and DRG, ICD-9 and ICD-10).
+-- Revised definitions (official CDC list in both ICD versions, delivery flag,
+-- same-admission labels): see sql/06_revision_labels/. Counts that compare the
+-- two versions: sql/05_revision_audit/ and revision_audit_counts.md.
+-- Only comments were edited in this file; no SQL statement was changed.
+-- ============================================================================
+
+-- ============================================================================
 -- "NEAR-MISS" / SEVERE MATERNAL MORBIDITY (SMM) COHORT -- Modelo B
 -- ============================================================================
 -- English version. Spanish original: smm_cohort_es.sql (kept in
@@ -23,8 +39,8 @@
 --       (maternal_cohort_expanded_en.sql) -- a wider denominator, more
 --       absolute cases, but no longer 1:1 comparable with published rates.
 --
--- This script has NOT been run against the real database yet (localhost:5433,
--- only reachable from Emmanuel's machine). Run it and share the counts.
+-- (Original note, superseded by the STATUS block at the top: this script has since
+-- been run on the local database, localhost:5433.)
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
@@ -165,8 +181,9 @@ INSERT INTO mimiciv.smm_code_patterns (indicator_group, indicator_name, code_typ
 ('Respiratory', 'Ventilation', 'PR', '5A1955Z');
 
 -- ----------------------------------------------------------------------------
--- Step 2: hadm_id with at least one SMM indicator (ICD-10 only; MIMIC-IV has
--- no ICD-9-coded data after Oct-2015, so ICD-9 doesn't apply here)
+-- Step 2: hadm_id with at least one SMM indicator (ICD-10 only, as in the submitted
+-- version). MIMIC-IV also has ICD-9-CM data until 2015, which this step does not
+-- see; the revision applies the CDC ICD-9-CM list in sql/06_revision_labels/.
 -- ----------------------------------------------------------------------------
 DROP VIEW IF EXISTS mimiciv.hadm_with_smm;
 

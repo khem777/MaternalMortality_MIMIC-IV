@@ -1,4 +1,16 @@
 -- ============================================================================
+-- STATUS (2026-10-25): obstetric cohort of the SUBMITTED manuscript
+-- ============================================================================
+-- The header below was written before this script was run. It was later run on
+-- the local database: the submitted manuscript (25,736 obstetric admissions,
+-- 15,084 patients) and the audit in sql/05_revision_audit/ are based on it. The
+-- revision keeps this cohort and does not apply a position rule (D6); delivery
+-- hospitalizations are identified with sql/06_revision_labels/02_delivery_flag.sql.
+-- The date filter below is commented out and was never applied to this cohort.
+-- Only comments were edited in this file; no SQL statement was changed.
+-- ============================================================================
+
+-- ============================================================================
 -- EXPANDED MATERNAL COHORT -- candidates to increase the N of deaths
 -- ============================================================================
 -- English version. Spanish original: maternal_cohort_expanded_es.sql (kept in
@@ -28,10 +40,8 @@
 --       O00-O9A, Z33/Z34/Z37/Z39), which can catch obstetric codes whose
 --       long title doesn't contain those words.
 --
--- IMPORTANT NOTE: this script has NOT been run against the real database
--- yet (localhost:5433, only reachable from Emmanuel's machine). Run it
--- yourself in pgAdmin/psql and share the resulting counts before deciding
--- the next step.
+-- (Original note, superseded by the STATUS block at the top: the script has since
+-- been run on the local database.)
 --
 -- KNOWN POSSIBLE BUG to check in the original exploratory script: the
 -- condition "TO_CHAR(a.admittime,'YYYYMM') <= '221410'" has month '14',

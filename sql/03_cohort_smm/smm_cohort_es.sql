@@ -1,4 +1,21 @@
 -- ============================================================================
+-- ESTADO (2026-10-25): este script define las etiquetas del manuscrito ENVIADO
+-- ============================================================================
+-- Se ejecutó en la base local y produjo las 475 admisiones con SMM de la versión
+-- enviada. Esa versión tiene dos limitaciones conocidas, corregidas en la
+-- revisión; no uses este script para el análisis revisado:
+--   (1) Códigos de SMM: solo ICD-10-CM/PCS. MIMIC-IV tiene diagnósticos y
+--       procedimientos ICD-9-CM hasta 2015, así que las admisiones ICD-9 se
+--       contaron como SMM negativas.
+--   (2) Bandera de parto: solo ICD-10 Z37/O80/O82; 8,857 partos, frente a 19,425
+--       con la bandera revisada (diagnósticos, procedimientos y DRG, ICD-9 e ICD-10).
+-- Definiciones revisadas (lista oficial del CDC en ambas versiones ICD, bandera
+-- de parto, etiquetas en la misma admisión): ver sql/06_revision_labels/. Conteos
+-- que comparan las dos versiones: sql/05_revision_audit/ y revision_audit_counts.md.
+-- Solo se editaron comentarios en este archivo; no se cambió ninguna sentencia SQL.
+-- ============================================================================
+
+-- ============================================================================
 -- COHORTE "NEAR-MISS" / MORBILIDAD MATERNA SEVERA (SMM) — Modelo B
 -- ============================================================================
 -- Fuente de los 21 indicadores y códigos ICD-10-CM/PCS: CDC (2023), vía
@@ -21,8 +38,8 @@
 --       -- denominador más amplio, más casos absolutos, pero ya no
 --       comparable 1:1 con las tasas publicadas.
 --
--- Este script NO se ha ejecutado contra tu base real (localhost:5433, solo
--- accesible desde tu máquina). Córrelo tú y compárteme los conteos.
+-- (Nota original, reemplazada por el bloque ESTADO de arriba: este script ya se
+-- ejecutó en la base local, localhost:5433.)
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
@@ -162,9 +179,9 @@ INSERT INTO mimiciv.smm_code_patterns (indicator_group, indicator_name, code_typ
 ('Respiratory', 'Ventilation', 'PR', '5A1955Z');
 
 -- ----------------------------------------------------------------------------
--- Paso 2: hadm_id con al menos un indicador SMM (ICD-10 únicamente; MIMIC-IV
--- no tiene datos codificados en ICD-9 posteriores a oct-2015, así que no
--- aplica para ICD-9 aquí)
+-- Paso 2: hadm_id con al menos un indicador SMM (solo ICD-10, como en la versión
+-- enviada). MIMIC-IV también tiene datos ICD-9-CM hasta 2015, que este paso no
+-- ve; la revisión aplica la lista ICD-9-CM del CDC en sql/06_revision_labels/.
 -- ----------------------------------------------------------------------------
 DROP VIEW IF EXISTS mimiciv.hadm_con_smm;
 

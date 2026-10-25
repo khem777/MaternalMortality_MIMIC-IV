@@ -1,4 +1,14 @@
 -- ============================================================================
+-- STATUS (2026-10-25): HISTORICAL diagnostic, not part of the submitted or revised analysis
+-- ============================================================================
+-- Exploratory funnel written while debugging an earlier cohort (384 rows). The
+-- date filter ('211001' to '221410') and the ICU requirement it tests are NOT
+-- used by the cohort of the submitted manuscript or by the revision (see
+-- maternal_cohort_expanded_en.sql and sql/06_revision_labels/).
+-- Only comments were edited in this file; no SQL statement was changed.
+-- ============================================================================
+
+-- ============================================================================
 -- DIAGNOSTIC: why does mimiciv.cohort_maternal only have 384 rows?
 -- ============================================================================
 -- English version. Spanish original: maternal_cohort_diagnostic_funnel_es.sql

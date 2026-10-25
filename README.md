@@ -1,69 +1,95 @@
-# Stacked Machine Learning for In-Hospital Maternal Mortality and Severe Maternal Morbidity (MIMIC-IV)
+# Stacked Machine Learning for Severe Maternal Morbidity at 24 Hours (MIMIC-IV)
 
-Code, SQL and figures for the manuscript **"Predicting In-Hospital Maternal Mortality and Severe Maternal Morbidity in MIMIC-IV with a Stacked Machine Learning Ensemble under Extreme Class Imbalance"**, prepared for submission to *Healthcare* (MDPI).
+Code, SQL and aggregate outputs for the manuscript **"Predicting Severe Maternal Morbidity at 24 Hours in Delivery Hospitalizations of MIMIC-IV: A Stacked Ensemble versus Logistic Regression, with a Feasibility Analysis of Maternal Death"**, under revision for *Healthcare* (MDPI).
 
 Authors: Emmanuel Gutiérrez Jiménez and José Duván Márquez Díaz — Systems Engineering Department, Universidad del Norte, Barranquilla, Colombia.
 
-> **No patient-level data are included in this repository.** MIMIC-IV requires credentialed access (see [Data access](#data-access)). The SQL files contain only schema definitions, cohort logic and an ICD-code-to-group mapping; no `subject_id`, `hadm_id` or `stay_id` values are published.
+> **No patient-level data are included in this repository.** MIMIC-IV requires credentialed access (see [Data access](#data-access)). The SQL files contain only schema definitions, cohort logic and code lists; the notebooks' outputs in `notebooks/revision/` are aggregate counts and metrics. No `subject_id`, `hadm_id` or `stay_id` values are published.
 
-## Summary
+## Summary of the revised analysis
 
-Two prediction tasks are built on the same cohort of **25,736 obstetric hospital admissions** (women aged 12–55; observed range 18–55) from MIMIC-IV v3.1 (patients admitted between 2008 and 2022; all dates are deidentified by patient-specific shifting):
+The revised analysis predicts **severe maternal morbidity (SMM)** in **delivery hospitalizations** of MIMIC-IV v3.1 (2008–2022; all dates are deidentified by patient-specific shifting), using only information available up to **24 hours after admission**. Maternal death is analysed only as a feasibility question, because there are too few events.
 
-| | Model A — maternal mortality | Model B — severe maternal morbidity (SMM) |
-|---|---|---|
-| Outcome | In-hospital death recorded in the index or a later admission | At least one of the 20 active CDC/HRSA FAD-2023 SMM indicators |
-| Events | 41 (0.159%) | 475 (1.846%) |
-| Predictors | 89 (including 26 expert-grouped diagnosis indicators, `gdg_m01`–`gdg_m26`) | 65 (diagnosis-group indicators excluded to avoid outcome leakage) |
-| Stacked ensemble, 5-fold CV | AUC 0.857 ± 0.069; AP 0.156 ± 0.096 | AUC 0.904 ± 0.020; AP 0.419 ± 0.050 |
-| Stacked ensemble, hold-out (20%) | 8 deaths in the test set; AUC 0.844, AP 0.148 (not reliable) | AUC 0.913; AP 0.384 |
+| | Revised analysis |
+|---|---|
+| Population | Delivery hospitalizations still in hospital 24 h after admission: 19,383 admissions (13,710 patients) |
+| Outcome | SMM: at least one of the 20 active CDC indicators, ICD-9-CM or ICD-10-CM/PCS (445 events, 2.30%) |
+| Predictors | Age, five administrative variables, hemoglobin and creatinine up to 24 h, creatinine missingness indicator |
+| Models | Logistic regression, Random Forest, Extra Trees, XGBoost and a stacked ensemble with a logistic meta-learner |
+| Validation | Patient-grouped nested cross-validation (5 outer × 3 inner folds, 3 repeats); recalibration inside the training patients; patient-level bootstrap |
+| Main result | Ensemble AUROC 0.789 (95% CI 0.765–0.813), AUPRC 0.167 (prevalence 0.023); logistic regression 0.780 / 0.154; XGBoost 0.791 / 0.163 |
+| Ensemble minus logistic regression | AUROC +0.009 (0.002–0.016); no difference from XGBoost |
+| Maternal death | 3 deaths in the same admission among the eligible deliveries: not feasible to model |
 
 Main findings:
 
-- With 41 events, mortality is too rare to model reliably in single-center data; results for Model A are exploratory.
-- SMM gives a much more stable task. Flagging the top 5% of admissions by predicted probability captured 68% of SMM cases (positive predictive value 0.25).
-- Raw predicted probabilities are **not calibrated** (class weighting and tree ensembles). Post hoc Platt scaling corrects them for Model B (Brier skill score from −4.10 to 0.26) but gives little gain for Model A (skill 0.06); use the raw scores to rank admissions, and absolute risks only after recalibration and external validation.
-- SMOTE did not improve precision-based metrics; IQR×3 winsorization (instead of row deletion) preserved all positive cases.
-- The models are research prototypes and must not guide individual clinical decisions.
+- At 24 hours SMM can be ranked moderately well; the gain of stacking over a regularized logistic regression is small.
+- The advantage of the ensemble depends on a creatinine missingness indicator: without it the AUROC falls by 0.085 for logistic regression and by 0.013 for the ensemble. Creatinine is present in 19.5% of admissions without SMM and in 62.9% of those with SMM, so missingness reflects who was tested.
+- Calibration is reported for the whole procedure, recalibration included. In a temporal validation (earlier years to later years of the same hospital) discrimination holds (AUROC 0.76–0.81) but risks are underestimated as the SMM rate rises (observed/expected up to 2.12).
+- Class weights and SMOTE-NC did not improve discrimination and required recalibration.
+- The models are exploratory research prototypes. They are single-center, have no external validation and must not guide individual clinical decisions.
 
-### Pipeline
+### What changed from the submitted version (v1)
 
-1. Cohort and feature extraction in PostgreSQL (MIMIC-IV loaded locally).
-2. Cleaning of sentinel values and implausible zeros; IQR×3 winsorization; skewness-driven imputation; differential scaling (RobustScaler / MinMaxScaler).
-3. Random Forest, XGBoost, Extra Trees and Logistic Regression tuned by grid search on average precision, combined by a class-weighted L2 logistic-regression meta-learner (stacking).
-4. Stratified 80/20 split (seed 42) and stratified 5-fold cross-validation; SMOTE sensitivity analysis inside the folds.
-5. Additional analyses: calibration and risk bands, SHAP, subgroup audit, Model A without diagnosis groups, and recalibration (Platt / isotonic).
+The submitted version (Model A, 41 positives; Model B, 475 SMM admissions, AUC 0.904) is **superseded**. The revision follows reviewers' comments and an audit of the submitted data (counts in [`revision_audit_counts.md`](revision_audit_counts.md)):
+
+- **Labels.** The SMM catalogue used ICD-10 codes only, so ICD-9-CM admissions (2008 to about 2015) were counted as negative. The revision uses the official CDC list in both ICD versions (848 SMM admissions in the obstetric universe, 447 in delivery hospitalizations). The mortality label is death in the same admission (10 deaths), not any later recorded death.
+- **Delivery flag.** The ICD-10-only flag found 8,857 deliveries; the revised flag (diagnoses, procedures and DRG, both ICD versions) finds 19,425.
+- **Prediction time.** Predictors are restricted to the window from 24 h before admission to 24 h after. Discharge-diagnosis indicators and ICU variables that exist only in the ICU are out of the main model.
+- **Patient overlap.** The submitted split was by admission, and about 59% of test patients also appeared in training. The revision groups every split by patient.
+- **Calibration and imbalance.** Recalibration is fitted inside the training patients; resampling is compared against no correction.
+
+The executed notebooks of v1 (`notebooks/maternal_mortality_models.ipynb` and `notebooks/maternal_smm_models.ipynb`) and the original SQL under `sql/02_cohort_mortality/` and `sql/03_cohort_smm/` are kept unchanged (only header comments were updated) for traceability. Do not use their results or labels for new work.
 
 ## Repository structure
 
 ```
 sql/
   01_load_mimic_iv_schema/   Rebuild the raw MIMIC-IV schema locally (see its README)
-  02_cohort_mortality/       Model A cohort, diagnosis-group mapping and catalogue
-  03_cohort_smm/             Model B cohort, SMM indicators, feature dataset, lab item lookup
+  02_cohort_mortality/       Obstetric universe of the submitted version, diagnosis-group mapping (v1)
+  03_cohort_smm/             SMM catalogue and datasets of the submitted version (v1), lab item lookup
+  04_cohort_perinatal/       Perinatal (fetal death) feasibility scripts; not part of the manuscript
+  05_revision_audit/         Audit counts on the submitted labels (Q1-Q21)
+  06_revision_labels/        Revised labels: official CDC code lists, delivery flag, same-admission labels,
+                             cohort rule, death horizons, SMM-death overlap
+  07_revision_predictors/    Predictors in the 24-hour window, final dictionary and missingness
+notebooks/
+  maternal_mortality_models.ipynb, maternal_smm_models.ipynb   Executed notebooks of the submitted version (v1)
+  maternal_fetal_death_models.ipynb   Perinatal (fetal death) feasibility model; not a manuscript model
+  revision/
+    01_audit_patient_overlap.ipynb               Patient overlap in the submitted splits
+    02_grouped_validation_smm.ipynb              Main analysis: grouped nested validation of the SMM models
+    03_resampling_comparison_smm.ipynb           No correction vs class weights vs SMOTE-NC
+    04_creatinine_indicator_sensitivity_smm.ipynb  With and without the creatinine missingness indicator
+    05_era_temporal_validation_smm.ipynb         Calendar era, ICD version and temporal validation
+    outputs_*.txt                                Aggregate outputs of these notebooks (no patient-level data)
 libraries/
   database.py                Connection (environment variables) and query functions
   functions.py               Small statistics helper
-notebooks/
-  maternal_mortality_models.ipynb   Model A — full pipeline
-  maternal_smm_models.ipynb         Model B — full pipeline
 data/
   ethnicity_groups.xlsx, language_groups.xlsx, admission_location_groups.xlsx
                              Code -> group lookup tables (no patient-level data)
-  Table_*.csv                Aggregate result tables written by the notebooks
+  Table_*.csv                Aggregate result tables of the submitted version
 scripts/
   generate_maternal_diagnoses_group_sql.py   Generates the diagnosis-group SQL from the mapping
+revision_audit_counts.md     Aggregate counts supporting the revision (Q1-Q25, Q-C to Q-I, decisions D1-D16)
 docker-compose.yml           Local PostgreSQL + Jupyter environment
 requirements.txt  .env.example  LICENSE
 ```
 
-Files with an `_es.sql` suffix are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions.
+Files with an `_es.sql` suffix (and the Spanish-named scripts) are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions.
+
+The outputs in `notebooks/revision/outputs_*.txt` are, one per analysis: `main` (main analysis), `no_indicator`, `resampling`, `era_temporal`, and the sensitivity analyses `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, plus `modelA` (death feasibility).
 
 ## Installation and execution
 
 1. **Get credentialed access to MIMIC-IV** (see [Data access](#data-access)) and download the CSV export. The manuscript uses **MIMIC-IV v3.1** (downloaded on 18 April 2025).
 2. **Load the schema locally** following `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` starts PostgreSQL 13 and Jupyter; edit the `volumes:` path of `db_mimiciv` to your own data directory and run only one container per data directory.
-3. **Build the cohorts and feature tables** by running the SQL scripts in `sql/02_cohort_mortality/` (Model A) and `sql/03_cohort_smm/` (Model B), as indicated at the start of each notebook.
+3. **Build the tables** by running the SQL scripts in this order (the header of each script lists its prerequisites; the revision scripts create new `*_v2` objects and do not modify the originals):
+   1. `sql/02_cohort_mortality/` and `sql/03_cohort_smm/` — obstetric universe and the objects the revision builds on.
+   2. `sql/06_revision_labels/` in numeric order (`01` to `06`, including `03b`).
+   3. `sql/07_revision_predictors/` in numeric order (`01`, `02`).
+   4. `sql/05_revision_audit/` is optional: it reproduces the audit on the submitted labels.
 4. **Set your credentials:** copy `.env.example` to `.env` in the project root and fill in your local database password. Check that the file is named `.env` (not `.env.txt`). `.env` is git-ignored and must never be committed.
 5. **Create an environment and install dependencies:**
    ```powershell
@@ -73,18 +99,17 @@ Files with an `_es.sql` suffix are the original Spanish scripts kept as a paper 
    pip install -r requirements.txt
    ```
    Select this interpreter as the Jupyter kernel.
-6. **Run the notebooks** top to bottom (Restart & Run All), one model at a time: `maternal_mortality_models.ipynb` (Model A) and `maternal_smm_models.ipynb` (Model B). The SHAP cells are CPU- and memory-intensive; run them only when needed.
-7. The recalibration analysis (Platt scaling and isotonic regression) is included in each notebook after the calibration section; it writes `data/Table_Recalibration_<label>.csv` and `figures/Fig_Recalibration_<label>.pdf/png`.
+6. **Run the revision notebooks** in `notebooks/revision/` top to bottom (Restart & Run All), starting with `02_grouped_validation_smm.ipynb` (main analysis); `03` to `05` use the same partitions and settings. The nested validation with bootstrap is computationally heavy.
 
-The notebooks write result tables to `data/` and figures to `figures/` (the `figures/` folder is generated locally and is not versioned). Files written into `data/` (for example `df_*_dataset.xlsx`) are derived, patient-level-adjacent artifacts and are excluded by `.gitignore`. Do not commit them.
+Notebooks print aggregate results only. Files written into `data/` (for example `df_*_dataset.xlsx`) are derived, patient-level-adjacent artifacts and are excluded by `.gitignore`. Do not commit them.
 
 ## Methodological notes
 
-- Train/test split and cross-validation are made **by admission**; they are not grouped by patient.
-- Imputation values and scalers were fitted before the train/test split, and cross-validation re-fits hyperparameters tuned on the training split, so estimates may be slightly optimistic.
-- The SMM label is ICD-based and an administrative proxy; the timing of predictors relative to the event was not enforced.
-- Single-center data and no external validation.
-- Reporting follows TRIPOD+AI; the completed checklist is provided as supplementary material of the article.
+- Prediction time is 24 hours after admission, and only admissions still in hospital at that time enter the main analysis (events before 24 h are reported separately). The SMM label, however, is an admission-level classification from ICD codes, which carry no timestamp: the model classifies SMM at 24 h; it does not predict its onset.
+- All splits are grouped by patient, so no patient appears on both sides. Imputation, scaling, hyperparameter tuning, stacking and recalibration are fitted inside the training part of each fold.
+- The SMM label is an administrative proxy and has not been validated against chart review in MIMIC-IV. The rate rises with calendar period and is aligned with the change from ICD-9-CM to ICD-10-CM/PCS, so the effect of coding and period cannot be separated.
+- Single-center data and no external validation. The temporal validation uses later patients of the same hospital.
+- Reporting follows TRIPOD+AI. The completed checklist and the supplementary tables (S1–S3 code lists, S4–S5 predictor availability) are provided with the article, not in this repository.
 
 ## Data access
 

@@ -11,7 +11,7 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 ## How to read this document
 
 - This is a copy of the count dashboard used during the manuscript revision, generated from the same data (published dashboard, version 24, 2026-10-25).
-- Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts were not modified. **Key figures of the revised manuscript** summarizes the results of the notebooks in `notebooks/revision/`, which are aggregate outputs only.
+- Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts keep their SQL unchanged (on 2026-10-25 only their header comments were updated to say that they define the submitted version). **Key figures of the revised manuscript** summarizes the results of the notebooks in `notebooks/revision/`, which are aggregate outputs only.
 - Each section names its source. The queries return no individual rows.
 - SMM = severe maternal morbidity; ICU = intensive care unit; DRG = diagnosis-related group; DIC = disseminated intravascular coagulation.
 - The methodological decisions (D1 to D16) are at the end.
@@ -391,7 +391,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Revision v2: Labels revised with the official CDC list
 
-**Interpretation.** From here on the counts come from the new scripts (folder sql/06_revision_labels): the official CDC list in ICD-9-CM and ICD-10-CM/PCS, a delivery flag using diagnoses, procedures and DRG, and death in the same admission. The original scripts were not touched. The results of Q1 to Q18 above describe the labels of the submitted manuscript.
+**Interpretation.** From here on the counts come from the new scripts (folder sql/06_revision_labels): the official CDC list in ICD-9-CM and ICD-10-CM/PCS, a delivery flag using diagnoses, procedures and DRG, and death in the same admission. The SQL of the original scripts was not touched. The results of Q1 to Q18 above describe the labels of the submitted manuscript.
 
 ### Q-C1. Cohort and new labels
 
