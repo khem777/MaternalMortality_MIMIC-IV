@@ -44,3 +44,6 @@ article/
 docs/
 figures/
 /article
+
+# Aggregate text reports written by notebooks/revision (local only)
+notebooks/revision/outputs_*.txt

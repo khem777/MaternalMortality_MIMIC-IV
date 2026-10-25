@@ -10,7 +10,7 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 
 ## How to read this document
 
-- This is a copy of the count dashboard used during the manuscript revision, generated from the same data (published dashboard, version 13, 2026-10-23).
+- This is a copy of the count dashboard used during the manuscript revision, generated from the same data (published dashboard, version 18, 2026-10-24).
 - Sections **Q1 to Q21**, **Q24** and **Q25** describe the labels and splits of the submitted manuscript. From **Revision v2** onward the counts come from the new scripts in `sql/06_revision_labels` and `sql/07_revision_predictors`; the original scripts were not modified.
 - Each section names its source. The queries return no individual rows.
 - SMM = severe maternal morbidity; ICU = intensive care unit; DRG = diagnosis-related group; DIC = disseminated intravascular coagulation.
@@ -69,6 +69,10 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 - [Q-G3. Creatinine availability by type of SMM](#q-g3-creatinine-availability-by-type-of-smm)
 - [Q-G4. Distribution of the three laboratory tests and values outside the proposed limits](#q-g4-distribution-of-the-three-laboratory-tests-and-values-outside-the-proposed-limits)
 - [Q-G5. Timing of the first value relative to the admission time](#q-g5-timing-of-the-first-value-relative-to-the-admission-time)
+- [Q-H1. SMM versus death in the same admission with the revised labels](#q-h1-smm-versus-death-in-the-same-admission-with-the-revised-labels)
+- [Q-H2. Profile of the deaths with the revised label](#q-h2-profile-of-the-deaths-with-the-revised-label)
+- [Q-H3. SMM by number of indicators and death in the same admission](#q-h3-smm-by-number-of-indicators-and-death-in-the-same-admission)
+- [Q-H4. SMM indicators carried by the admissions with death](#q-h4-smm-indicators-carried-by-the-admissions-with-death)
 - [Decisions made on 2026-10-23](#decisions-made-on-2026-10-23)
 
 ### Dataset size and labels by scope
@@ -189,7 +193,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 | SMM, no in-hospital death | 474 |
 | SMM, in-hospital death | 1 |
 
-**Interpretation.** Only 1 SMM case died in that admission, and 9 deaths have no SMM indicator. Many are probably in ICD-9 admissions, where SMM is zero by construction; Q16 in part 2 checks this.
+**Interpretation.** With the submitted SMM label, only 1 SMM case died in that admission, and 9 deaths have no SMM indicator. Many are probably in ICD-9 admissions, where SMM is zero by construction; Q16 in part 2 checks this. With the revised label the result changes: see Q-H1.
 
 ### Q11. SMM versus the submitted mortality label
 
@@ -202,7 +206,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 | SMM, no mortality label | 474 |
 | SMM, mortality label | 1 |
 
-**Interpretation.** The two outcomes barely overlap: only 1 admission is positive for both. Model A and Model B predict almost disjoint events, and this must be acknowledged in the predictor comparison that Reviewer 1 requests.
+**Interpretation.** With the submitted labels, the two outcomes barely overlap: only 1 admission is positive for both. Model A and Model B predict almost disjoint events, and this must be acknowledged in the predictor comparison that Reviewer 1 requests. With the revised SMM label, all 10 deaths in the same admission do carry SMM (Q-H1).
 
 ### Q12. Inclusion rule: obstetric diagnosis in position 4 or less
 
@@ -863,6 +867,72 @@ _Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 **Interpretation.** The median time of the first value is 0.1 h for hemoglobin and -0.2 h for creatinine, that is, around the admission time (negative hours are before admission). 43.7% of the hemoglobin values and 53.6% of the creatinine values are taken before admission. Only 1.5% of the hemoglobin values and 8.5% of the creatinine values arrive after 12 h, far from the 24-h prediction point.
 
+### Q-H1. SMM versus death in the same admission with the revised labels
+
+_Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+
+| Scope | Admissions | Neither SMM nor death | SMM only | Death only | SMM and death | Total with SMM | Total deaths | % of SMM without death |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|
+| All obstetric admissions | 25,736 | 24,888 | 838 | 0 | 10 | 848 | 10 | 98.8% |
+| Delivery hospitalizations | 19,425 | 18,978 | 443 | 0 | 4 | 447 | 4 | 99.1% |
+| Eligible deliveries (24-h model) | 19,383 | 18,938 | 442 | 0 | 3 | 445 | 3 | 99.3% |
+
+**Interpretation.** With the revised SMM label, all 10 deaths in the same admission carry at least one SMM indicator (4 of 4 in deliveries and 3 of 3 in eligible deliveries), and 838 of the 848 SMM admissions (98.8%) ended in a live discharge. The overlap runs one way: death lies inside SMM, and SMM is almost never fatal. With the submitted label (Q10 and Q11) only 1 of the 10 deaths was SMM, because 9 were in ICD-9 admissions that label could not detect.
+
+### Q-H2. Profile of the deaths with the revised label
+
+_Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+
+| Profile | Delivery | Eligible at 24 h | With SMM | Deaths |
+|:---|:---|:---|:---|---:|
+| Delivery, eligible at 24 h | Yes | Yes | Yes | 3 |
+| Delivery, ended before 24 h | Yes | No | Yes | 1 |
+| No delivery, eligible at 24 h | No | Yes | Yes | 2 |
+| No delivery, ended before 24 h | No | No | Yes | 4 |
+
+**Interpretation.** All 10 deaths carry SMM. Three are deliveries eligible for the 24-h model, 1 is a delivery that ended before 24 h, and the rest are non-delivery admissions (2 eligible and 4 that ended before 24 h).
+
+### Q-H3. SMM by number of indicators and death in the same admission
+
+_Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+
+| Indicators per admission | SMM admissions | Died in the same admission | % who died |
+|:---|---:|---:|---:|
+| 1 | 619 | 2 | 0.3% |
+| 2 | 119 | 4 | 3.4% |
+| 3 | 45 | 0 | 0.0% |
+| 4 | 27 | 0 | 0.0% |
+| 5 | 22 | 2 | 9.1% |
+| 6 | 10 | 2 | 20.0% |
+| 7 | 4 | 0 | 0.0% |
+| 8 | 1 | 0 | 0.0% |
+| 10 | 1 | 0 | 0.0% |
+| Two or more | 229 | 8 | 3.5% |
+| Total | 848 | 10 | 1.2% |
+
+**Interpretation.** 8 of the 229 SMM admissions with two or more indicators (3.5%) died, against 2 of 619 with a single indicator (0.3%). Mortality rises with the number of indicators. The rows "Two or more" and "Total" are sums of the rows above.
+
+### Q-H4. SMM indicators carried by the admissions with death
+
+_Source: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+
+| Indicator | Admissions with death |
+|:---|---:|
+| Ventilation | 6 |
+| Cardiac arrest/ventricular fibrillation | 5 |
+| ARDS | 4 |
+| DIC | 4 |
+| Shock | 3 |
+| Acute renal failure | 2 |
+| Conversion of cardiac rhythm | 2 |
+| Pulmonary edema/acute heart failure | 2 |
+| Hysterectomy | 1 |
+| Puerperal cerebrovascular disorders | 1 |
+| Sepsis | 1 |
+| Sickle cell disease with crisis | 1 |
+
+**Interpretation.** The deaths mostly carry indicators of organ support or of a terminal course: ventilation in 6 of the 10, cardiac arrest in 5, ARDS and DIC in 4 each, and shock in 3. Part of the overlap therefore reflects how a fatal course is coded, and not only a clinical relationship between the two outcomes. An admission can carry several indicators.
+
 ## Decisions made on 2026-10-23
 
 - **D1, scope of Model A.** Decided: exploratory feasibility analysis, using the label of death in the same admission. With 10 events, the sample-size calculation will show that it is not enough for a model, and SMM is the main outcome.
@@ -885,6 +955,7 @@ _Source: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 | `sql/05_revision_audit/` | Audit Q1 to Q21 on the submitted labels |
 | `sql/06_revision_labels/` | Official code lists, delivery flag, same-admission labels, cohort rule and death horizons (Q22, Q23, Q-C1 to Q-C7, Q-D1 to Q-D5, Q-E1 to Q-E4) |
 | `sql/07_revision_predictors/` | Predictors with a 24-h window and their availability (Q-F1 to Q-F5); final predictor dictionary and missingness (Q-G0 to Q-G5) |
+| `sql/06_revision_labels/06_smm_death_overlap.sql` | SMM and death in the same admission with the revised labels (Q-H1 to Q-H4) |
 | `notebooks/revision/01_audit_patient_overlap.ipynb` | Patient overlap between training and test (Q24, Q25) |
 
 Queries Q-D0, Q-D2, Q-E0, Q-E2, Q-E3, Q-F0 and Q-G6 (units recorded) are used in the text of the sections and in the revision plan, but have no table of their own here.
