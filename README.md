@@ -111,7 +111,7 @@ Notebooks print aggregate results only. Files written into `data/` (for example 
 - All splits are grouped by patient, so no patient appears on both sides. Imputation, scaling, hyperparameter tuning, stacking and recalibration are fitted inside the training part of each fold.
 - The SMM label is an administrative proxy and has not been validated against chart review in MIMIC-IV. The rate rises with calendar period and is aligned with the change from ICD-9-CM to ICD-10-CM/PCS, so the effect of coding and period cannot be separated.
 - Single-center data and no external validation. The temporal validation uses later patients of the same hospital.
-- Reporting follows TRIPOD+AI. The completed checklist and the supplementary tables (S1–S3 code lists, S4–S5 predictor availability) are provided with the article, not in this repository.
+- Reporting follows TRIPOD+AI. The completed checklist is provided with the article, not in this repository; the code lists (Appendix D, Tables A4–A6) and the predictor availability tables (Appendix E, Tables A7–A8) are appendices of the article.
 
 ## Data access
 

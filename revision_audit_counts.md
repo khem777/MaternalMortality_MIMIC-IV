@@ -1028,7 +1028,7 @@ Consistency checks (all as expected): the 42 delivery hospitalizations not eligi
 
 - **D13, models and imbalance.** Decided: keep the thesis ensemble (random forest, XGBoost, extra trees and logistic regression with a logistic meta-learner) and compare it with logistic regression, without resampling in the main framework.
 - **D14, deliveries with an ICU admission in the first 24 h.** Decided: they stay in the main model (115 admissions), with stratified performance and a sensitivity analysis without them, so that cases are not discarded without temporal evidence.
-- **D15, SMOTE.** Decided: a short comparison in the supplement between no correction, class weights only and SMOTE-NC, each tuned separately, to answer R1-9.
+- **D15, SMOTE.** Decided: a short comparison in an appendix (Appendix B of the article) between no correction, class weights only and SMOTE-NC, each tuned separately, to answer R1-9.
 - **D16, plausibility limits.** Decided: hemoglobin 3 to 20 g/dL, hematocrit 10 to 65% and creatinine 0.1 to 20 mg/dL, plus the sensitivity analysis without the creatinine indicator.
 
 ## Sources
