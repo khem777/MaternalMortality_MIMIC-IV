@@ -55,6 +55,10 @@ libraries/
   functions.py               Pequeña utilidad estadística
 data/
   outputs_*.txt              Salidas agregadas de los notebooks (sin datos a nivel de paciente)
+docs/
+  TRIPOD_AI_checklist_v4.docx                 Lista de verificación TRIPOD+AI completa
+  Supplementary_Code_Lists_healthcare.docx    Listas completas de códigos ICD-9-CM / ICD-10-CM/PCS (Tablas A4-A6 = Apéndice D del artículo)
+  Supplementary_Predictor_Missingness.docx    Disponibilidad de los predictores por desenlace y estrato (Tablas A7-A8 = Apéndice E del artículo)
 analysis_plan_notebooks_es.md   Plan de análisis de los notebooks (y versión en inglés)
 revision_audit_counts_es.md     Conteos documentados con su SQL fuente en sql/06_audit_counts/ (y versión en inglés)
 docker-compose.yml           Entorno local de PostgreSQL + Jupyter
@@ -97,7 +101,7 @@ Los notebooks imprimen solo resultados agregados. Los archivos escritos en `data
 - Todas las particiones están agrupadas por paciente, de modo que ningún paciente aparece en ambos lados. La imputación, el escalado, el ajuste de hiperparámetros, el apilamiento y la recalibración se ajustan dentro de la parte de entrenamiento de cada pliegue.
 - La etiqueta de SMM es un sustituto administrativo y no se ha validado contra revisión de historias clínicas en MIMIC-IV. La tasa sube con el período calendario y coincide con el cambio de ICD-9-CM a ICD-10-CM/PCS, por lo que no se pueden separar el efecto de la codificación y el del período.
 - Datos de un solo centro y sin validación externa. La validación temporal usa pacientes posteriores del mismo hospital.
-- El reporte sigue TRIPOD+AI. La lista de verificación completa se entrega con el artículo, no en este repositorio; las listas de códigos (Apéndice D, Tablas A4–A6) y las tablas de disponibilidad de predictores (Apéndice E, Tablas A7–A8) son apéndices del artículo.
+- El reporte sigue TRIPOD+AI. La lista de verificación completa está en `docs/TRIPOD_AI_checklist_v4.docx`. Las listas de códigos (Apéndice D, Tablas A4–A6 del artículo) y las tablas de disponibilidad de predictores (Apéndice E, Tablas A7–A8) se entregan además como archivos independientes en `docs/`, con la misma numeración de tablas. Las listas de códigos se toman literalmente de `sql/04_labels/01_smm_codes_official.sql` y `sql/04_labels/02_delivery_flag.sql`. Estos documentos no contienen datos a nivel de paciente.
 
 ## Acceso a los datos
 

@@ -53,6 +53,10 @@ libraries/
   functions.py               Small statistics helper
 data/
   outputs_*.txt              Aggregate outputs of the notebooks (no patient-level data)
+docs/
+  TRIPOD_AI_checklist_v4.docx                 Completed TRIPOD+AI reporting checklist
+  Supplementary_Code_Lists_healthcare.docx    Complete ICD-9-CM / ICD-10-CM/PCS code lists (Tables A4-A6 = Appendix D of the article)
+  Supplementary_Predictor_Missingness.docx    Availability of the predictors by outcome and stratum (Tables A7-A8 = Appendix E of the article)
 analysis_plan_notebooks.md   Analysis plan of the notebooks (and _es version)
 revision_audit_counts.md     Counts documented with their source SQL in sql/06_audit_counts/ (and _es version)
 docker-compose.yml           Local PostgreSQL + Jupyter environment
@@ -95,7 +99,7 @@ Notebooks print aggregate results only. Files written into `data/` (for example 
 - All splits are grouped by patient, so no patient appears on both sides. Imputation, scaling, hyperparameter tuning, stacking and recalibration are fitted inside the training part of each fold.
 - The SMM label is an administrative proxy and has not been validated against chart review in MIMIC-IV. The rate rises with calendar period and is aligned with the change from ICD-9-CM to ICD-10-CM/PCS, so the effect of coding and period cannot be separated.
 - Single-center data and no external validation. The temporal validation uses later patients of the same hospital.
-- Reporting follows TRIPOD+AI. The completed checklist is provided with the article, not in this repository; the code lists (Appendix D, Tables A4–A6) and the predictor availability tables (Appendix E, Tables A7–A8) are appendices of the article.
+- Reporting follows TRIPOD+AI. The completed checklist is in `docs/TRIPOD_AI_checklist_v4.docx`. The code lists (Appendix D, Tables A4–A6 of the article) and the predictor availability tables (Appendix E, Tables A7–A8) are also provided as standalone files in `docs/`, with the same table numbers. The code lists are taken literally from `sql/04_labels/01_smm_codes_official.sql` and `sql/04_labels/02_delivery_flag.sql`. These documents contain no patient-level data.
 
 ## Data access
 
