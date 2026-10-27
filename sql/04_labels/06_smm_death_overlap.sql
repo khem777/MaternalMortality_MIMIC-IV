@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 06_smm_death_overlap.sql
+-- 04_labels / 06_smm_death_overlap.sql
 -- Overlap between severe maternal morbidity (revised label) and death in the
 -- same admission (plan task T08; comment R1-9)
 -- ============================================================================
@@ -12,7 +12,7 @@
 --   end in death.
 --
 -- What it does: only reads.  It creates no table or view and changes no label.
---   Requires mimiciv.predictors_24h_v2 (07_revision_predictors/01_predictors_24h.sql).
+--   Requires mimiciv.predictors_24h_v2 (05_predictors/01_predictors_24h.sql).
 --   Aggregate counts only -- share the results of the three queries, never rows.
 -- ============================================================================
 

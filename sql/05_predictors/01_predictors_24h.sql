@@ -1,5 +1,5 @@
 -- ============================================================================
--- 07_revision_predictors / 01_predictors_24h.sql
+-- 05_predictors / 01_predictors_24h.sql
 -- Predictors restricted to the first 24 hours of the hospitalization
 -- (plan tasks T09-T13, T46, T52; comments R1-2, R2-4, R2-5, R2-7, R3-2, R3-3)
 -- ============================================================================

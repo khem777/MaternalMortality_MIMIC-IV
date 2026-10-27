@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 03b_reconcile_old_labels.sql
+-- 04_labels / 03b_reconcile_old_labels.sql
 -- Reconcile the SMM label of the SUBMITTED dataset with the original view
 -- ============================================================================
 -- Why: before the response letter says "from 475 to 848", the 475 SMM admissions

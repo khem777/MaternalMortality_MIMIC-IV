@@ -1,16 +1,16 @@
 # Stacked Machine Learning for Severe Maternal Morbidity at 24 Hours (MIMIC-IV)
 
-Code, SQL and aggregate outputs for the manuscript **"Predicting Severe Maternal Morbidity at 24 Hours in Delivery Hospitalizations of MIMIC-IV: A Stacked Ensemble versus Logistic Regression, with a Feasibility Analysis of Maternal Death"**, under revision for *Healthcare* (MDPI).
+Code, SQL and aggregate outputs for the manuscript **"Predicting Severe Maternal Morbidity at 24 Hours in Delivery Hospitalizations of MIMIC-IV: A Stacked Ensemble versus Logistic Regression, with a Feasibility Analysis of Maternal Death"**, submitted to *Healthcare* (MDPI).
 
 Authors: Emmanuel Gutiérrez Jiménez and José Duván Márquez Díaz — Systems Engineering Department, Universidad del Norte, Barranquilla, Colombia.
 
-> **No patient-level data are included in this repository.** MIMIC-IV requires credentialed access (see [Data access](#data-access)). The SQL files contain only schema definitions, cohort logic and code lists; the notebooks' outputs in `notebooks/revision/` are aggregate counts and metrics. No `subject_id`, `hadm_id` or `stay_id` values are published.
+> **No patient-level data are included in this repository.** MIMIC-IV requires credentialed access (see [Data access](#data-access)). The SQL files contain only schema definitions, cohort logic and code lists; the notebooks' outputs in `data/` are aggregate counts and metrics. No `subject_id`, `hadm_id` or `stay_id` values are published.
 
-## Summary of the revised analysis
+## Summary of the analysis
 
-The revised analysis predicts **severe maternal morbidity (SMM)** in **delivery hospitalizations** of MIMIC-IV v3.1 (2008–2022; all dates are deidentified by patient-specific shifting), using only information available up to **24 hours after admission**. Maternal death is analysed only as a feasibility question, because there are too few events.
+The analysis predicts **severe maternal morbidity (SMM)** in **delivery hospitalizations** of MIMIC-IV v3.1 (2008–2022; all dates are deidentified by patient-specific shifting), using only information available up to **24 hours after admission**. Maternal death is analysed only as a feasibility question, because there are too few events.
 
-| | Revised analysis |
+| | Analysis |
 |---|---|
 | Population | Delivery hospitalizations still in hospital 24 h after admission: 19,383 admissions (13,710 patients) |
 | Outcome | SMM: at least one of the 20 active CDC indicators, ICD-9-CM or ICD-10-CM/PCS (445 events, 2.30%) |
@@ -29,69 +29,45 @@ Main findings:
 - Class weights and SMOTE-NC did not improve discrimination and required recalibration.
 - The models are exploratory research prototypes. They are single-center, have no external validation and must not guide individual clinical decisions.
 
-### What changed from the submitted version (v1)
-
-The submitted version (Model A, 41 positives; Model B, 475 SMM admissions, AUC 0.904) is **superseded**. The revision follows reviewers' comments and an audit of the submitted data (counts in [`revision_audit_counts.md`](revision_audit_counts.md)):
-
-- **Labels.** The SMM catalogue used ICD-10 codes only, so ICD-9-CM admissions (2008 to about 2015) were counted as negative. The revision uses the official CDC list in both ICD versions (848 SMM admissions in the obstetric universe, 447 in delivery hospitalizations). The mortality label is death in the same admission (10 deaths), not any later recorded death.
-- **Delivery flag.** The ICD-10-only flag found 8,857 deliveries; the revised flag (diagnoses, procedures and DRG, both ICD versions) finds 19,425.
-- **Prediction time.** Predictors are restricted to the window from 24 h before admission to 24 h after. Discharge-diagnosis indicators and ICU variables that exist only in the ICU are out of the main model.
-- **Patient overlap.** The submitted split was by admission, and about 59% of test patients also appeared in training. The revision groups every split by patient.
-- **Calibration and imbalance.** Recalibration is fitted inside the training patients; resampling is compared against no correction.
-
-The executed notebooks of v1 (`notebooks/maternal_mortality_models.ipynb` and `notebooks/maternal_smm_models.ipynb`) and the original SQL under `sql/02_cohort_mortality/` and `sql/03_cohort_smm/` are kept unchanged (only header comments were updated) for traceability. Do not use their results or labels for new work.
-
 ## Repository structure
 
 ```
 sql/
   01_load_mimic_iv_schema/   Rebuild the raw MIMIC-IV schema locally (see its README)
-  02_cohort_mortality/       Obstetric universe of the submitted version, diagnosis-group mapping (v1)
-  03_cohort_smm/             SMM catalogue and datasets of the submitted version (v1), lab item lookup
-  04_cohort_perinatal/       Perinatal (fetal death) feasibility scripts; not part of the manuscript
-  05_revision_audit/         Audit counts on the submitted labels (Q1-Q21)
-  06_revision_labels/        Revised labels: official CDC code lists, delivery flag, same-admission labels,
+  02_cohort_mortality/       Obstetric universe and diagnosis-group mapping (base tables)
+  03_cohort_smm/             SMM catalogue and base datasets, lab item lookup
+  04_labels/                 Labels: official CDC code lists, delivery flag, same-admission labels,
                              cohort rule, death horizons, SMM-death overlap
-  07_revision_predictors/    Predictors in the 24-hour window, final dictionary and missingness
+  05_predictors/             Predictors in the 24-hour window, final dictionary and missingness
 notebooks/
-  maternal_mortality_models.ipynb, maternal_smm_models.ipynb   Executed notebooks of the submitted version (v1)
-  maternal_fetal_death_models.ipynb   Perinatal (fetal death) feasibility model; not a manuscript model
-  revision/
-    01_audit_patient_overlap.ipynb               Patient overlap in the submitted splits
-    02_grouped_validation_smm.ipynb              Main analysis: grouped nested validation of the SMM models
-    03_resampling_comparison_smm.ipynb           No correction vs class weights vs SMOTE-NC
-    04_creatinine_indicator_sensitivity_smm.ipynb  With and without the creatinine missingness indicator
-    05_era_temporal_validation_smm.ipynb         Calendar era, ICD version and temporal validation
-    06_smm_renal_only_sensitivity.ipynb          Sensitivity without admissions whose only SMM indicator is acute renal failure
-    07_smm_timing_vs_prediction_time.ipynb       Counts: timing of procedure-based SMM indicators relative to the 24-h prediction point
-    outputs_*.txt                                Aggregate outputs of these notebooks (no patient-level data)
+  01_patient_overlap.ipynb                       Patient overlap between training and evaluation samples under admission-level splitting
+  02_grouped_validation_smm.ipynb                Main analysis: grouped nested validation of the SMM models
+  03_resampling_comparison_smm.ipynb             No correction vs class weights vs SMOTE-NC
+  04_creatinine_indicator_sensitivity_smm.ipynb  With and without the creatinine missingness indicator
+  05_era_temporal_validation_smm.ipynb           Calendar era, ICD version and temporal validation
+  06_smm_renal_only_sensitivity.ipynb            Sensitivity without admissions whose only SMM indicator is acute renal failure
+  07_smm_timing_vs_prediction_time.ipynb         Counts: timing of procedure-based SMM indicators relative to the 24-h prediction point
 libraries/
   database.py                Connection (environment variables) and query functions
   functions.py               Small statistics helper
 data/
-  ethnicity_groups.xlsx, language_groups.xlsx, admission_location_groups.xlsx
-                             Code -> group lookup tables (no patient-level data)
-  Table_*.csv                Aggregate result tables of the submitted version
-scripts/
-  generate_maternal_diagnoses_group_sql.py   Generates the diagnosis-group SQL from the mapping
-revision_audit_counts.md     Aggregate counts supporting the revision (Q1-Q25, Q-C to Q-I, decisions D1-D16)
+  outputs_*.txt              Aggregate outputs of the notebooks (no patient-level data)
 docker-compose.yml           Local PostgreSQL + Jupyter environment
 requirements.txt  .env.example  LICENSE
 ```
 
 Files with an `_es.sql` suffix (and the Spanish-named scripts) are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions.
 
-The aggregate outputs `notebooks/revision/outputs_*.txt` (counts and metrics only; no identifiers or patient-level rows) are published with the code. Some of the earlier notebooks state in their header that these files are git-ignored; that note predates the decision to publish them. They are, one per analysis: `main` (main analysis), `no_indicator`, `resampling`, `era_temporal`, and the sensitivity analyses `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, plus `modelA` (death feasibility).
+The aggregate outputs `data/outputs_*.txt` (counts and metrics only; no identifiers or patient-level rows) are published with the code. They are, one per analysis: `main` (main analysis), `no_indicator`, `resampling`, `era_temporal`, and the sensitivity analyses `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, `excl_renal_only` and `smm_timing`, plus `modelA` (death feasibility).
 
 ## Installation and execution
 
 1. **Get credentialed access to MIMIC-IV** (see [Data access](#data-access)) and download the CSV export. The manuscript uses **MIMIC-IV v3.1** (downloaded on 18 April 2025).
 2. **Load the schema locally** following `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` starts PostgreSQL 13 and Jupyter; edit the `volumes:` path of `db_mimiciv` to your own data directory and run only one container per data directory.
-3. **Build the tables** by running the SQL scripts in this order (the header of each script lists its prerequisites; the revision scripts create new `*_v2` objects and do not modify the originals):
-   1. `sql/02_cohort_mortality/` and `sql/03_cohort_smm/` — obstetric universe and the objects the revision builds on.
-   2. `sql/06_revision_labels/` in numeric order (`01` to `06`, including `03b`).
-   3. `sql/07_revision_predictors/` in numeric order (`01`, `02`).
-   4. `sql/05_revision_audit/` is optional: it reproduces the audit on the submitted labels.
+3. **Build the tables** by running the SQL scripts in this order (the header of each script lists its prerequisites; the scripts of `04_labels` and `05_predictors` create new `*_v2` objects and do not modify the base tables):
+   1. `sql/02_cohort_mortality/` and `sql/03_cohort_smm/` — obstetric universe and the base objects the later scripts build on.
+   2. `sql/04_labels/` in numeric order (`01` to `06`, including `03b`).
+   3. `sql/05_predictors/` in numeric order (`01`, `02`).
 4. **Set your credentials:** copy `.env.example` to `.env` in the project root and fill in your local database password. Check that the file is named `.env` (not `.env.txt`). `.env` is git-ignored and must never be committed.
 5. **Create an environment and install dependencies:**
    ```powershell
@@ -101,7 +77,7 @@ The aggregate outputs `notebooks/revision/outputs_*.txt` (counts and metrics onl
    pip install -r requirements.txt
    ```
    Select this interpreter as the Jupyter kernel.
-6. **Run the revision notebooks** in `notebooks/revision/` top to bottom (Restart & Run All), starting with `02_grouped_validation_smm.ipynb` (main analysis); `03` to `06` use the same partitions and settings (`07` only counts events and trains no model). The nested validation with bootstrap is computationally heavy.
+6. **Run the notebooks** in `notebooks/` top to bottom (Restart & Run All), starting with `02_grouped_validation_smm.ipynb` (main analysis); `01` replicates admission-level partitions to count patient overlap; `03` to `06` use the same partitions and settings (`07` only counts events and trains no model). The nested validation with bootstrap is computationally heavy.
 
 Notebooks print aggregate results only. Files written into `data/` (for example `df_*_dataset.xlsx`) are derived, patient-level-adjacent artifacts and are excluded by `.gitignore`. Do not commit them.
 

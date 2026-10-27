@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 01_smm_codes_official.sql
+-- 04_labels / 01_smm_codes_official.sql
 -- Official CDC SMM code catalogue (ICD-9-CM + ICD-10-CM/PCS) -- REVISION v2
 -- ============================================================================
 -- Purpose (reviewer comments R1-1, R2-1, R1-3, R2-6 -- see revision plan v2):

@@ -19,8 +19,7 @@ postgres_data/
 
 # Derived/output files written by the notebooks into data/ -- these are
 # patient-level-adjacent artifacts and must never be committed. Only the
-# three lookup tables (ethnicity_groups.xlsx, language_groups.xlsx,
-# admission_location_groups.xlsx) belong in data/ and are tracked.
+# aggregate reports data/outputs_*.txt are tracked.
 data/df*
 
 # Local secrets -- never commit real credentials (the template .env.example is tracked)
@@ -28,11 +27,8 @@ data/df*
 !.env.example
 
 # Local backups of datasets (patient-level-adjacent): no spreadsheet or table
-# is tracked anywhere, except the three public lookup tables
+# is tracked anywhere
 *.xlsx
-!data/ethnicity_groups.xlsx
-!data/language_groups.xlsx
-!data/admission_location_groups.xlsx
 
 # Local-only copy of the earlier internal README (working notes)
 docs/README_working_notes_OLD.md
@@ -45,5 +41,5 @@ docs/
 figures/
 /article
 
-# Aggregate text reports written by notebooks/revision (counts and metrics only) are PUBLISHED on purpose;
+# Aggregate text reports written to data/ by the notebooks (counts and metrics only) are PUBLISHED on purpose;
 # the notebooks never write identifiers or rows. Check each new outputs_*.txt before committing it.

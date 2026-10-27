@@ -4,7 +4,7 @@
 -- Exploratory funnel written while debugging an earlier cohort (384 rows). The
 -- date filter ('211001' to '221410') and the ICU requirement it tests are NOT
 -- used by the cohort of the submitted manuscript or by the revision (see
--- maternal_cohort_expanded_en.sql and sql/06_revision_labels/).
+-- maternal_cohort_expanded_en.sql and sql/04_labels/).
 -- Only comments were edited in this file; no SQL statement was changed.
 -- ============================================================================
 

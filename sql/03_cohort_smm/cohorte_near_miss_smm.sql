@@ -10,7 +10,7 @@
 --   (2) Bandera de parto: solo ICD-10 Z37/O80/O82; 8,857 partos, frente a 19,425
 --       con la bandera revisada (diagnósticos, procedimientos y DRG, ICD-9 e ICD-10).
 -- Definiciones revisadas (lista oficial del CDC en ambas versiones ICD, bandera
--- de parto, etiquetas en la misma admisión): ver sql/06_revision_labels/. Conteos
+-- de parto, etiquetas en la misma admisión): ver sql/04_labels/. Conteos
 -- que comparan las dos versiones: sql/05_revision_audit/ y revision_audit_counts.md.
 -- Solo se editaron comentarios en este archivo; no se cambió ninguna sentencia SQL.
 -- ============================================================================
@@ -181,7 +181,7 @@ INSERT INTO mimiciv.smm_code_patterns (indicator_group, indicator_name, code_typ
 -- ----------------------------------------------------------------------------
 -- Paso 2: hadm_id con al menos un indicador SMM (solo ICD-10, como en la versión
 -- enviada). MIMIC-IV también tiene datos ICD-9-CM hasta 2015, que este paso no
--- ve; la revisión aplica la lista ICD-9-CM del CDC en sql/06_revision_labels/.
+-- ve; la revisión aplica la lista ICD-9-CM del CDC en sql/04_labels/.
 -- ----------------------------------------------------------------------------
 DROP VIEW IF EXISTS mimiciv.hadm_con_smm;
 

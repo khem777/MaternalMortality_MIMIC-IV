@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 05_death_horizon_counts.sql
+-- 04_labels / 05_death_horizon_counts.sql
 -- How many deaths would a fixed follow-up horizon add?  (feasibility of Model A; R1-1, R1-6)
 -- ============================================================================
 -- Question: with the same-admission label there are 10 deaths (4 in delivery

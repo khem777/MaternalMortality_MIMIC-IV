@@ -1,5 +1,5 @@
 -- ============================================================================
--- 07_revision_predictors / 02_dictionary_missingness.sql
+-- 05_predictors / 02_dictionary_missingness.sql
 -- Final predictor dictionary and missingness tables
 -- (plan tasks T11, T12, T13, T46; comments R1-7, R2-3, R2-20)
 -- ============================================================================
@@ -22,7 +22,7 @@
 -- What this script creates (new name only; nothing existing is modified):
 --   mimiciv.predictor_dictionary_final_v2   one row per predictor
 --
--- Requires: 04_cohort_obstetric_flags.sql and 07_revision_predictors/01_predictors_24h.sql.
+-- Requires: 04_cohort_obstetric_flags.sql and 05_predictors/01_predictors_24h.sql.
 -- Run the whole script (DBeaver: Alt+X), then run each query Q-G0 .. Q-G6 and share
 --   only the aggregate results, never row-level data.  Percentiles are reported
 --   instead of minimum and maximum values, so that no single patient's extreme value is exposed.

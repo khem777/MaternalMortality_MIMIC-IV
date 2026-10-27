@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 03_labels_same_admission.sql
+-- 04_labels / 03_labels_same_admission.sql
 -- Admission-level labels for the revised analysis (both models)
 -- ============================================================================
 -- Purpose (comments R1-1, R2-1, R1-3, R2-6, R2-14, R3-*; decisions D1, D4(a),

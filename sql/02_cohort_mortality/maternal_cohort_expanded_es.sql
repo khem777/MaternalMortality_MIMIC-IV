@@ -5,7 +5,7 @@
 -- ejecutó en la base local: el manuscrito enviado (25,736 admisiones obstétricas,
 -- 15,084 pacientes) y la auditoría de sql/05_revision_audit/ se basan en él. La
 -- revisión conserva esta cohorte y no aplica regla de posición (D6); las
--- hospitalizaciones de parto se identifican con sql/06_revision_labels/02_delivery_flag.sql.
+-- hospitalizaciones de parto se identifican con sql/04_labels/02_delivery_flag.sql.
 -- El filtro de fechas de abajo está comentado y nunca se aplicó a esta cohorte.
 -- Solo se editaron comentarios en este archivo; no se cambió ninguna sentencia SQL.
 -- ============================================================================

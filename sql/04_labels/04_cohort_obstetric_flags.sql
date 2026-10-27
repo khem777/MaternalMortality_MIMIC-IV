@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 04_cohort_obstetric_flags.sql
+-- 04_labels / 04_cohort_obstetric_flags.sql
 -- Diagnosis-position rule and cohort definition (plan task T44; comments R2-14, R1-5)
 -- ============================================================================
 -- Problem: the manuscript says an admission enters the cohort when it has an

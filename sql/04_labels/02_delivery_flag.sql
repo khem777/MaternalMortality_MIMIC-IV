@@ -1,5 +1,5 @@
 -- ============================================================================
--- 06_revision_labels / 02_delivery_flag.sql
+-- 04_labels / 02_delivery_flag.sql
 -- Delivery-hospitalization flag (ICD-9-CM + ICD-10-CM/PCS + optional MS-DRG)
 -- ============================================================================
 -- Purpose (reviewer comments R1-3, R2-6, R2-14; decision D5(a) in plan v2):

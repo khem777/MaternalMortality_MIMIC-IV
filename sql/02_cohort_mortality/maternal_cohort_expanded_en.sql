@@ -5,7 +5,7 @@
 -- the local database: the submitted manuscript (25,736 obstetric admissions,
 -- 15,084 patients) and the audit in sql/05_revision_audit/ are based on it. The
 -- revision keeps this cohort and does not apply a position rule (D6); delivery
--- hospitalizations are identified with sql/06_revision_labels/02_delivery_flag.sql.
+-- hospitalizations are identified with sql/04_labels/02_delivery_flag.sql.
 -- The date filter below is commented out and was never applied to this cohort.
 -- Only comments were edited in this file; no SQL statement was changed.
 -- ============================================================================
