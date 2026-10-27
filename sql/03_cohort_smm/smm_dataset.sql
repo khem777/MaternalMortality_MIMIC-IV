@@ -14,12 +14,12 @@
 -- mimiciv.cohort_maternal.
 --
 -- PREREQUISITES (run in this order, once each):
---   1. sql/02_cohort_mortality/maternal_cohort_expanded_en.sql
+--   1. sql/02_cohort_mortality/maternal_cohort_expanded.sql
 --        -> mimiciv.pregnancy_diagnoses_expanded
---   2. sql/03_cohort_smm/smm_cohort_en.sql (Steps 1-3)
+--   2. sql/03_cohort_smm/smm_cohort.sql (Steps 1-3)
 --        -> mimiciv.smm_code_patterns, hadm_with_smm, hadm_delivery_hospitalization
---   3. sql/02_cohort_mortality/maternal_diagnoses_group_load_en.sql and
---      maternal_diagnoses_group_assign_en.sql (catalog + gdg propagation)
+--   3. sql/02_cohort_mortality/maternal_diagnoses_group_load.sql and
+--      maternal_diagnoses_group_assign.sql (catalog + gdg propagation)
 --
 -- NOTE: this DROPs and rebuilds the table. It can be slow (correlated
 -- subqueries over chartevents/labevents for every admission, as in Modelo A).

@@ -35,7 +35,7 @@ WHERE d.outcome_smm = 1;
 -- Q23c  Which indicators does the original view assign to admissions that the
 --       submitted dataset flags but the view does not?  (aggregate)
 -- Run this only if in_dataset_only > 0 or not_in_view_but_in_new > 0; compare the
--- definition of outcome_smm in sql/03_cohort_smm/smm_dataset_en.sql.
+-- definition of outcome_smm in sql/03_cohort_smm/smm_dataset.sql.
 SELECT COUNT(*) FILTER (WHERE d.outcome_smm = 1 AND l.smm_only_renal)   AS dataset_smm_renal_only_new,
        COUNT(*) FILTER (WHERE d.outcome_smm = 1 AND NOT l.is_delivery_v2) AS dataset_smm_not_delivery_v2
 FROM mimiciv.cohort_smm_dataset d

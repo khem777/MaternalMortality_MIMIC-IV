@@ -3,7 +3,7 @@
 -- Official CDC SMM code catalogue (ICD-9-CM + ICD-10-CM/PCS) -- REVISION v2
 -- ============================================================================
 -- Purpose (reviewer comments R1-1, R2-1, R1-3, R2-6 -- see revision plan v2):
---   * The original catalogue (03_cohort_smm/smm_cohort_en.sql) deviated from
+--   * The original catalogue (03_cohort_smm/smm_cohort.sql) deviated from
 --     the official CDC list and had ICD-10 patterns only.  This script builds
 --     a NEW table (smm_code_patterns_v2) -- the original is NOT touched.
 --

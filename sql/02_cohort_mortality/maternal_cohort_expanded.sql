@@ -13,15 +13,12 @@
 -- ============================================================================
 -- EXPANDED MATERNAL COHORT -- candidates to increase the N of deaths
 -- ============================================================================
--- English version. Spanish original: maternal_cohort_expanded_es.sql (kept in
--- this same folder). Object names below are the English names this project
--- uses going forward -- see docs/NAMING.md for the full Spanish -> English
--- mapping applied across the whole project.
+-- Spanish version of this script: maternal_cohort_expanded_es.sql (same folder).
 --
--- Goal: expand the original cohort (23,474 / 23,471 / 36 deaths, defined in
--- docs/Cohort de embarazadas.txt) by applying 3 of the 4 levers discussed
+-- Goal: expand the original cohort (23,474 admissions with an obstetric text match,
+-- 23,471 after keeping women only, 36 deaths) by applying 3 of the 4 levers discussed
 -- while debugging the neonatal cohort. The 4th (a composite "near-miss"
--- outcome) is handled separately -- see sql/03_cohort_smm/smm_cohort_en.sql
+-- outcome) is handled separately -- see sql/03_cohort_smm/smm_cohort.sql
 -- -- because it changes the research question and needed its own agreed-upon
 -- indicator list.
 --
@@ -49,15 +46,15 @@
 -- It no longer applies here because the date filter was removed, but if
 -- you re-enable it, double check that value.
 --
--- CORRECTION (v2, from Emmanuel's own finding): the PATIENTS table in this
+-- CORRECTION (v2, from a finding of the exploratory analysis): the PATIENTS table in this
 -- schema defines `dob` explicitly as "This is a NaN column" (see
 -- sql/01_load_mimic_iv_schema/mimic_create_database.sql) -- it was only
 -- ever populated for the cases the neonatal pipeline updated with a
 -- synthetic "baby's date of birth", not as a real demographic field for
 -- each adult patient. Using it to compute the mother's age filters the
--- cohort incorrectly (that's why removing the age BETWEEN filter alone
--- jumped the count from 36 to 45: it stopped wrongly excluding mothers
--- whose `dob` was never populated).
+-- cohort incorrectly: the age condition evaluates to NULL for every mother
+-- whose `dob` was never populated, so those admissions are silently excluded
+-- (in the maternal cohort this removed essentially all rows).
 --
 -- The correct way to estimate age in MIMIC-IV is ANCHOR_AGE / ANCHOR_YEAR
 -- (populated for every patient -- it's MIMIC-IV's official

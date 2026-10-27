@@ -77,7 +77,7 @@ def disconnect_database(engine):
 # actual source of truth for these 26 groups (not this constant). If the
 # panel's ongoing review changes the number of groups, update the CSV, the
 # catalog table (re-run scripts/generate_maternal_diagnoses_group_sql.py +
-# maternal_diagnoses_group_load_en.sql), the ALTER TABLE in Section 2.4, and
+# maternal_diagnoses_group_load.sql), the ALTER TABLE in Section 2.4, and
 # N_GDG_EXPERT below together, so they stay in sync.
 # ---------------------------------------------------------------------------
 N_GDG_EXPERT = 26   # expert-classified maternal/obstetric diagnostic groups
@@ -92,7 +92,7 @@ def get_maternal_cohort_query():
     Returns the SELECT that loads the analysis-ready maternal-mortality
     dataset (mimiciv.cohort_maternal_dataset) into a pandas DataFrame via
     pd.read_sql(). The table is built by
-    sql/02_cohort_mortality/maternal_cohort_dataset_en.sql.
+    sql/02_cohort_mortality/maternal_cohort_dataset.sql.
     """
     gdg_cols = ", ".join(GDG_MATERNAL_COLUMNS)
     query = f"""SELECT subject_id, hadm_id, stay_id, dob, age_at_admission, outcome
@@ -318,7 +318,7 @@ def get_smm_denominator_comparison_query():
     Compares the expanded-obstetric-cohort denominator vs. the
     delivery-hospitalization denominator, and the SMM-positive count under
     each. Run this BEFORE deciding which cohort feeds the final model --
-    see sql/03_cohort_smm/smm_cohort_en.sql, Step 4.
+    see sql/03_cohort_smm/smm_cohort.sql, Step 4.
     """
     query = """
         WITH maternal_admissions AS (

@@ -59,23 +59,23 @@ docker-compose.yml           Local PostgreSQL + Jupyter environment
 requirements.txt  .env.example  LICENSE
 ```
 
-Files with an `_es.sql` suffix (and the Spanish-named scripts) are the original Spanish scripts kept as a paper trail; run the `_en.sql` versions.
+Every SQL script has a Spanish version with the same name plus the suffix `_es` (for example `smm_cohort.sql` and `smm_cohort_es.sql`). The SQL statements are identical; only the comments are translated. The scripts without suffix are the originals.
 
 The aggregate outputs `data/outputs_*.txt` (counts and metrics only; no identifiers or patient-level rows) are published with the code. They are, one per analysis: `main` (main analysis), `no_indicator`, `resampling`, `era_temporal`, and the sensitivity analyses `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, `excl_renal_only` and `smm_timing`, plus `modelA` (death feasibility).
 
 ## Installation and execution
 
 1. **Get credentialed access to MIMIC-IV** (see [Data access](#data-access)) and download the CSV export. The manuscript uses **MIMIC-IV v3.1** (downloaded on 18 April 2025).
-2. **Load the schema locally** following `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` starts PostgreSQL 13 and Jupyter; edit the `volumes:` path of `db_mimiciv` to your own data directory and run only one container per data directory.
+2. **Load the schema locally** following `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` starts PostgreSQL 13 and Jupyter; set `MIMICIV_DATA_DIR` and `MIMICIV_CSV_DIR` in your `.env` (create it first as described in step 4; no script needs to be edited) and run only one container per data directory.
 3. **Build the tables** by running the SQL scripts in this order (the header of each script lists its prerequisites; the scripts of `04_labels` and `05_predictors` create new `*_v2` objects and do not modify the base tables):
    1. Obstetric universe and base objects the later scripts build on, in this order:
-      1. `sql/02_cohort_mortality/maternal_cohort_expanded_en.sql` — obstetric diagnosis view.
-      2. `sql/02_cohort_mortality/maternal_cohort_en.sql`, then `maternal_cohort_dataset_en.sql` and `maternal_cohort_diagnoses_en.sql` — mortality-model cohort, its dataset and its diagnosis table.
-      3. `sql/02_cohort_mortality/maternal_diagnoses_group_load_en.sql`, then `maternal_diagnoses_group_assign_en.sql` — diagnostic-group catalogue and assignment.
-      4. `sql/03_cohort_smm/smm_cohort_en.sql`, then `smm_dataset_en.sql` — SMM base objects and dataset.
+      1. `sql/02_cohort_mortality/maternal_cohort_expanded.sql` — obstetric diagnosis view.
+      2. `sql/02_cohort_mortality/maternal_cohort.sql`, then `maternal_cohort_dataset.sql` and `maternal_cohort_diagnoses.sql` — mortality-model cohort, its dataset and its diagnosis table.
+      3. `sql/02_cohort_mortality/maternal_diagnoses_group_load.sql`, then `maternal_diagnoses_group_assign.sql` — diagnostic-group catalogue and assignment.
+      4. `sql/03_cohort_smm/smm_cohort.sql`, then `smm_dataset.sql` — SMM base objects and dataset.
    2. `sql/04_labels/` in numeric order (`01` to `06`, including `03b`).
    3. `sql/05_predictors/` in numeric order (`01`, `02`).
-   4. *(Optional)* `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`) reproduces the cohort-flow and cross-tabulation counts. It needs the objects from steps 3.1 and 3.2 and creates only temporary tables.
+   4. *(Optional)* `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`) reproduces the cohort-flow and cross-tabulation counts. It needs the objects from steps 3.1 and 3.2 and creates only temporary tables.
 4. **Set your credentials:** copy `.env.example` to `.env` in the project root and fill in your local database password. Check that the file is named `.env` (not `.env.txt`). `.env` is git-ignored and must never be committed.
 5. **Create an environment and install dependencies:**
    ```powershell

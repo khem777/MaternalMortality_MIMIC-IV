@@ -1,26 +1,29 @@
+-- Server-side COPY: the CSV files are read by the PostgreSQL server from /mimic_csv
+-- (the host folder MIMICIV_CSV_DIR mounted by docker-compose.yml, with hosp/ and icu/ inside).
+-- Run it as a superuser (the default POSTGRES user of the container is one).
 SET search_path TO mimiciv;
 
-copy mimiciv.ADMISSIONS FROM '/var/lib/postgresql/data/csv/hosp/admissions.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.PATIENTS FROM '/var/lib/postgresql/data/csv/hosp/patients.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.TRANSFERS FROM '/var/lib/postgresql/data/csv/hosp/transfers.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.D_ITEMS FROM '/var/lib/postgresql/data/csv/icu/d_items.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.CHARTEVENTS FROM '/var/lib/postgresql/data/csv/icu/chartevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.DATETIMEEVENTS FROM '/var/lib/postgresql/data/csv/icu/datetimeevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.ICUSTAYS FROM '/var/lib/postgresql/data/csv/icu/icustays.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.INPUTEVENTS FROM '/var/lib/postgresql/data/csv/icu/inputevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.OUTPUTEVENTS FROM '/var/lib/postgresql/data/csv/icu/outputevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.PROCEDUREEVENTS FROM '/var/lib/postgresql/data/csv/icu/procedureevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.INGREDIENTEVENTS FROM '/var/lib/postgresql/data/csv/icu/ingredientevents.csv' DELIMITER ',' CSV HEADER NULL ''
+copy mimiciv.ADMISSIONS FROM '/mimic_csv/hosp/admissions.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.PATIENTS FROM '/mimic_csv/hosp/patients.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.TRANSFERS FROM '/mimic_csv/hosp/transfers.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.D_ITEMS FROM '/mimic_csv/icu/d_items.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.CHARTEVENTS FROM '/mimic_csv/icu/chartevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.DATETIMEEVENTS FROM '/mimic_csv/icu/datetimeevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.ICUSTAYS FROM '/mimic_csv/icu/icustays.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.INPUTEVENTS FROM '/mimic_csv/icu/inputevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.OUTPUTEVENTS FROM '/mimic_csv/icu/outputevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.PROCEDUREEVENTS FROM '/mimic_csv/icu/procedureevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.INGREDIENTEVENTS FROM '/mimic_csv/icu/ingredientevents.csv' DELIMITER ',' CSV HEADER NULL '';
 
--- Ejecutar primero los comandos de powershell para convertir la carpeta en CSV
-copy mimiciv.CAREGIVER FROM '/var/lib/postgresql/data/csv/icu/caregiver.csv' DELIMITER ',' CSV HEADER NULL ''
+-- The CSV files must be uncompressed (gunzip the .csv.gz files from PhysioNet).
+copy mimiciv.CAREGIVER FROM '/mimic_csv/icu/caregiver.csv' DELIMITER ',' CSV HEADER NULL '';
 
-copy mimiciv.D_HCPCS FROM '/var/lib/postgresql/data/csv/hosp/d_hcpcs.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.D_ICD_DIAGNOSES FROM '/var/lib/postgresql/data/csv/hosp/d_icd_diagnoses.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.D_ICD_PROCEDURES FROM '/var/lib/postgresql/data/csv/hosp/d_icd_procedures.csv' DELIMITER ',' CSV HEADER NULL ''
+copy mimiciv.D_HCPCS FROM '/mimic_csv/hosp/d_hcpcs.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.D_ICD_DIAGNOSES FROM '/mimic_csv/hosp/d_icd_diagnoses.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.D_ICD_PROCEDURES FROM '/mimic_csv/hosp/d_icd_procedures.csv' DELIMITER ',' CSV HEADER NULL '';
 
--- No ejecutar, porque no deja importar y tocó hacer el scripts manualmente
---copy mimiciv.D_LABITEMS FROM ''/var/lib/postgresql/data/csv/hosp/d_labitems.csv' DELIMITER ',' CSV HEADER NULL ''
+-- Do not run: d_labitems cannot be imported with COPY; its rows are inserted below.
+--copy mimiciv.D_LABITEMS FROM '/mimic_csv/hosp/d_labitems.csv' DELIMITER ',' CSV HEADER NULL ''
 
 Insert into mimiciv.d_labitems values (50801, 'Alveolar-arterial Gradient','Blood','Blood Gas');
 Insert into mimiciv.d_labitems values (50802, 'Base Excess','Blood','Blood Gas');
@@ -1673,23 +1676,21 @@ Insert into mimiciv.d_labitems values (53188, 'Lymphocytes','Blood','Chemistry')
 Insert into mimiciv.d_labitems values (53189, 'Platelet Count','Blood','Chemistry');
 Insert into mimiciv.d_labitems values (53190, 'MXD%','Blood','Chemistry');
 
--- Problemas con el csv (Convertir los archivos en csv)
-copy mimiciv.DIAGNOSES_ICD FROM '/var/lib/postgresql/data/csv/hosp/diagnoses_icd.csv' DELIMITER ',' CSV HEADER NULL ''
+-- These tables need the uncompressed CSV files too.
+copy mimiciv.DIAGNOSES_ICD FROM '/mimic_csv/hosp/diagnoses_icd.csv' DELIMITER ',' CSV HEADER NULL '';
 
-copy mimiciv.DRGCODES FROM '/var/lib/postgresql/data/csv/hosp/drgcodes.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.EMAR FROM '/var/lib/postgresql/data/csv/hosp/emar.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.EMAR_DETAIL FROM '/var/lib/postgresql/data/csv/hosp/emar_detail.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.HCPCSEVENTS FROM '/var/lib/postgresql/data/csv/hosp/hcpcsevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.LABEVENTS FROM '/var/lib/postgresql/data/csv/hosp/labevents.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.MICROBIOLOGYEVENTS FROM '/var/lib/postgresql/data/csv/hosp/microbiologyevents.csv' DELIMITER ',' CSV HEADER NULL ''
+copy mimiciv.DRGCODES FROM '/mimic_csv/hosp/drgcodes.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.EMAR FROM '/mimic_csv/hosp/emar.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.EMAR_DETAIL FROM '/mimic_csv/hosp/emar_detail.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.HCPCSEVENTS FROM '/mimic_csv/hosp/hcpcsevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.LABEVENTS FROM '/mimic_csv/hosp/labevents.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.MICROBIOLOGYEVENTS FROM '/mimic_csv/hosp/microbiologyevents.csv' DELIMITER ',' CSV HEADER NULL '';
 
--- OMR?
-
-copy mimiciv.PHARMACY FROM '/var/lib/postgresql/data/csv/hosp/pharmacy.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.POE FROM '/var/lib/postgresql/data/csv/hosp/poe.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.POE_DETAIL FROM '/var/lib/postgresql/data/csv/hosp/poe_detail.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.PRESCRIPTIONS FROM '/var/lib/postgresql/data/csv/hosp/prescriptions.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.PROVIDER FROM '/var/lib/postgresql/data/csv/hosp/provider.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.SERVICES FROM '/var/lib/postgresql/data/csv/hosp/services.csv' DELIMITER ',' CSV HEADER NULL ''
-copy mimiciv.PROCEDURES_ICD FROM '/var/lib/postgresql/data/csv/hosp/procedures_icd.csv' DELIMITER ',' CSV HEADER NULL ''
+copy mimiciv.PHARMACY FROM '/mimic_csv/hosp/pharmacy.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.POE FROM '/mimic_csv/hosp/poe.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.POE_DETAIL FROM '/mimic_csv/hosp/poe_detail.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.PRESCRIPTIONS FROM '/mimic_csv/hosp/prescriptions.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.PROVIDER FROM '/mimic_csv/hosp/provider.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.SERVICES FROM '/mimic_csv/hosp/services.csv' DELIMITER ',' CSV HEADER NULL '';
+copy mimiciv.PROCEDURES_ICD FROM '/mimic_csv/hosp/procedures_icd.csv' DELIMITER ',' CSV HEADER NULL '';
 

@@ -1,3 +1,4 @@
+CREATE SCHEMA IF NOT EXISTS mimiciv;
 SET search_path TO mimiciv;
 
 DROP TABLE IF EXISTS ADMISSIONS CASCADE;
@@ -437,7 +438,7 @@ CREATE TABLE POE
 DROP TABLE IF EXISTS POE_DETAIL CASCADE;
 CREATE TABLE POE_DETAIL
 (
-	-- length of field name should be a typo, correct it to 25
+	-- field_name length: corrected to 25 (the source documentation had a typo here)
 	-- Maximum length of field_value is 55
 	POE_ID VARCHAR(25) NOT NULL,
 	POE_SEQ INT NOT NULL,

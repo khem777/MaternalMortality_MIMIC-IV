@@ -2,22 +2,27 @@
 -- 04_labels / 04_cohort_obstetric_flags.sql
 -- Diagnosis-position rule and cohort definition (plan task T44; comments R2-14, R1-5)
 -- ============================================================================
--- Problem: the manuscript says an admission enters the cohort when it has an
---   obstetric diagnosis in position <= 4, but the SQL that built both datasets
---   has NO position restriction.  The previous audit (Q12) showed the rule
---   matters: it would remove 162 admissions, 18 SMM cases and 3 of the 10
---   same-admission deaths.  Before choosing a rule we need to know WHICH
---   admissions it removes and what kind of obstetric code they carry.
+-- Background: the submitted manuscript described the cohort as admissions with an
+--   obstetric diagnosis in position <= 4, but the SQL that built both datasets has NO
+--   position restriction (a diagnosis in ANY position qualifies).  This script measures
+--   what a position rule would change, so that the cohort rule could be chosen with data.
 --
--- What this script does (decision-neutral: it does NOT pick the rule):
+-- Decision (D6): NO position rule is applied.  The cohort keeps every admission with an
+--   obstetric diagnosis in any position, and the manuscript text was aligned with the SQL.
+--   A rule of position <= 4 would remove 38 of the 848 SMM admissions and 3 of the 10
+--   same-admission deaths (Q-D5, rule R1): severe admissions whose obstetric code is listed
+--   after other complications.  As a sensitivity analysis, the cohort can be restricted to
+--   admissions with at least one STRUCTURED obstetric code (Q-D5, rule R2).
+--
+-- What this script does (it applies no rule to the cohort):
 --   1. Adds, per admission of the obstetric universe, the obstetric-diagnosis
 --      features needed to apply ANY of the candidate rules with a WHERE clause:
 --      lowest diagnosis position, number of obstetric diagnoses, whether any
 --      obstetric diagnosis is a STRUCTURED code (ICD-10 chapter O, Z33/Z34/Z37/Z39,
 --      ICD-9 630-679, ICD-9 V22-V28) or only a TEXT match on the long title
 --      (e.g. "weeks of gestation", "pregnancy test"), ICU stay flag.
---   2. Returns aggregate counts only (Q-D1 .. Q-D5) so that you and I can choose
---      the rule with data (decision D6) and write it into Methods.
+--   2. Returns aggregate counts only (Q-D0 .. Q-D5, including Q-D4b) that document the
+--      effect of each candidate rule.
 --
 -- Run order: 01 -> 02 -> 03 -> 04.  Everything is created under NEW names (*_v2);
 --   no existing table or view is modified.  Share only the aggregate results of

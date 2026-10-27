@@ -1,7 +1,7 @@
 -- ============================================================================
 -- ASSIGN EXPERT DIAGNOSTIC GROUPS + PROPAGATE TO gdg_m01..gdg_m28
 -- ============================================================================
--- PREREQUISITE: run maternal_diagnoses_group_load_en.sql first (creates and
+-- PREREQUISITE: run maternal_diagnoses_group_load.sql first (creates and
 -- populates mimiciv.maternal_diagnoses_group_catalog and
 -- mimiciv.maternal_diagnoses_group_map from the two CSVs under this same
 -- folder, which are the actual source of truth for the classification).
@@ -11,7 +11,7 @@
 -- panel's feedback changes the classification, you only ever need to:
 --   1. edit maternal_diagnoses_group_catalog.csv / maternal_diagnoses_group_map.csv
 --   2. re-run scripts/generate_maternal_diagnoses_group_sql.py
---   3. re-run maternal_diagnoses_group_load_en.sql (rebuilds the two tables)
+--   3. re-run maternal_diagnoses_group_load.sql (rebuilds the two tables)
 --   4. re-run this script (re-applies the new classification everywhere)
 -- ============================================================================
 
@@ -63,7 +63,7 @@ WHERE  diagnoses_group IS NULL;
 -- at least one of its top-4 diagnoses (seq_num <= 4, matching how
 -- cohort_maternal_diagnoses itself was built) classified into that group.
 -- Codes mapped to the 'diagnoses_excluded' sentinel never set any gdg_m*
--- column, by design (see maternal_diagnoses_group_load_en.sql).
+-- column, by design (see maternal_diagnoses_group_load.sql).
 --
 -- Because this reads the catalog table instead of hard-coding 28 column
 -- names, it does not need to change if the expert panel later adds, drops,

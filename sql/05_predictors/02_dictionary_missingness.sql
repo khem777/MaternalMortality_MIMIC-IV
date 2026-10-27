@@ -15,7 +15,7 @@
 --       laboratory tests and the ICU-only variables go to sensitivity analyses
 --       with missingness indicators.  Creatinine carries a missingness indicator
 --       in the main model (its availability depends on the outcome, Q-F4).
---   The threshold is the parameter min_coverage_pct below.
+--       The threshold is the parameter min_coverage_pct below.
 --   D12 Hemoglobin and hematocrit are strongly correlated (Q-G2b); only hemoglobin enters the main
 --       model and hematocrit goes to the laboratory sensitivity analysis.
 --

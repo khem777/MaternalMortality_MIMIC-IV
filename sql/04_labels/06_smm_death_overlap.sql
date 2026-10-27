@@ -13,7 +13,7 @@
 --
 -- What it does: only reads.  It creates no table or view and changes no label.
 --   Requires mimiciv.predictors_24h_v2 (05_predictors/01_predictors_24h.sql).
---   Aggregate counts only -- share the results of the three queries, never rows.
+--   Aggregate counts only -- share the results of the four queries, never rows.
 -- ============================================================================
 
 -- Q-H1  SMM x death in the same admission, by scope

@@ -9,7 +9,7 @@
 -- Prerequisites (already built for the submitted analyses):
 --   mimiciv.cohort_maternal        (Model A table; column `outcome`)
 --   mimiciv.cohort_smm_dataset     (Model B table; columns outcome_smm, is_delivery_hospitalization,
---                                   icu_stay, heart_rate, creatine, lactic_acid, ...)
+--                                   icu_stay, heart_rate, creatine, lactic_acid, ...; the column is spelled `creatine`, as in the table)
 --   mimiciv.pregnancy_diagnoses_expanded (view)
 -- Run the whole script (DBeaver: Alt+X) and copy each result set into the
 -- 'Conteos' sheet of Plan_Correcciones_Maternal_Healthcare.xlsx.
@@ -117,7 +117,7 @@ SELECT 'Q5 in-hospital death, same admission' AS q,
 FROM   tmp_audit_cohort;
 
 -- ----------------------------------------------------------------------------
--- Q6. ICD version and era (R1-3 / R2-6). SMM codes in smm_cohort_en.sql are matched
+-- Q6. ICD version and era (R1-3 / R2-6). SMM codes in smm_cohort.sql are matched
 --     with icd_version = 10 only.
 -- ----------------------------------------------------------------------------
 SELECT 'Q6 icd version' AS q,

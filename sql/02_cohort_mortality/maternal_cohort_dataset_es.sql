@@ -1,28 +1,28 @@
 -- ============================================================================
--- Analysis-ready dataset (mortality model): mimiciv.cohort_maternal_dataset
+-- Conjunto de datos listo para análisis (modelo de mortalidad): mimiciv.cohort_maternal_dataset
 -- ============================================================================
--- One row per admission of mimiciv.cohort_maternal, with administrative
--- attributes, the outcome, and the EARLIEST available value of 27 chart / lab
--- measurements (nested-query pattern X -> Y -> K):
---   * ICU-only (mimiciv.chartevents): heart rate, respiratory rate, O2 saturation,
---     mean / systolic / diastolic blood pressure, temperature, weight, height,
---     GCS (eye, verbal, motor), RASS, PEEP set.
---   * Laboratory (earliest of chartevents OR labevents, hospital-wide): glucose,
---     hemoglobin, sodium, potassium, calcium, magnesium, chloride, bicarbonate,
---     phosphorus, creatinine, hematocrit, lactate, anion gap.
---     labevents itemids: glucose 50931, hemoglobin 51222, sodium 50983,
---     potassium 50971, calcium 50893, magnesium 50960, chloride 50902,
---     bicarbonate 50882, phosphate 50970, creatinine 50912, hematocrit 51221,
---     lactate 50813, anion gap 50868.
--- Admissions without an ICU stay keep NULL in the ICU-only variables.
+-- Una fila por admisión de mimiciv.cohort_maternal, con atributos administrativos,
+-- el desenlace y el valor DISPONIBLE MÁS TEMPRANO de 27 mediciones de signos / laboratorio
+-- (patrón de consultas anidadas X -> Y -> K):
+--   * Solo UCI (mimiciv.chartevents): frecuencia cardíaca, frecuencia respiratoria, saturación de O2,
+--     presión arterial media / sistólica / diastólica, temperatura, peso, talla,
+--     GCS (ocular, verbal, motor), RASS, PEEP programada.
+--   * Laboratorio (el más temprano entre chartevents O labevents, en todo el hospital): glucosa,
+--     hemoglobina, sodio, potasio, calcio, magnesio, cloruro, bicarbonato,
+--     fósforo, creatinina, hematocrito, lactato, brecha aniónica.
+--     itemids de labevents: glucosa 50931, hemoglobina 51222, sodio 50983,
+--     potasio 50971, calcio 50893, magnesio 50960, cloruro 50902,
+--     bicarbonato 50882, fosfato 50970, creatinina 50912, hematocrito 51221,
+--     lactato 50813, brecha aniónica 50868.
+-- Las admisiones sin estancia en UCI conservan NULL en las variables exclusivas de UCI.
 --
--- PREREQUISITE: maternal_cohort_en.sql (creates mimiciv.cohort_maternal).
--- NOTE: slow (correlated subqueries over chartevents / labevents). Run the whole
--- script at once. Expected size: 25,736 rows, 41 with outcome = 1.
+-- PRERREQUISITO: maternal_cohort_es.sql (crea mimiciv.cohort_maternal).
+-- NOTA: lento (subconsultas correlacionadas sobre chartevents / labevents). Ejecute todo el
+-- script de una sola vez. Tamaño esperado: 25,736 filas, 41 con outcome = 1.
 -- ============================================================================
 
--- NOTE: plain CREATE TABLE (no DROP): it fails if mimiciv.cohort_maternal_dataset already exists.
--- Drop it yourself, deliberately, if you need to rebuild it.
+-- NOTA: CREATE TABLE simple (sin DROP): falla si mimiciv.cohort_maternal_dataset ya existe.
+-- Elimínela usted mismo, de forma deliberada, si necesita reconstruirla.
 
 CREATE TABLE mimiciv.cohort_maternal_dataset AS
 SELECT K.*
@@ -186,9 +186,9 @@ FROM
 							)
 	) as weight_admission
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -210,9 +210,9 @@ FROM
 		limit 1
 	) as glucose
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -234,9 +234,9 @@ FROM
 		limit 1
 	) as hemoglobine
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -258,9 +258,9 @@ FROM
 		limit 1
 	) as sodium
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -282,9 +282,9 @@ FROM
 		limit 1
 	) as potassium
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -306,9 +306,9 @@ FROM
 		limit 1
 	) as noionized_calcium
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -330,9 +330,9 @@ FROM
 		limit 1
 	) as magnesium
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -354,9 +354,9 @@ FROM
 		limit 1
 	) as chloride
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -378,9 +378,9 @@ FROM
 		limit 1
 	) as bicarbonate
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -402,9 +402,9 @@ FROM
 		limit 1
 	) as phosphorus
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -426,9 +426,9 @@ FROM
 		limit 1
 	) as creatine
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -450,9 +450,9 @@ FROM
 		limit 1
 	) as hematrocit
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -582,9 +582,9 @@ FROM
 							)
 	) as height
 	   , (
-		-- earliest available value from EITHER chartevents (ICU-only) OR
-		-- labevents (hospital-wide), so the lab is also recovered for admissions
-		-- that never had an ICU stay
+		-- el valor disponible más temprano de chartevents (solo UCI) O de
+		-- labevents (en todo el hospital), de modo que el laboratorio también se recupera para admisiones
+		-- que nunca tuvieron una estancia en UCI
 		select combined.valuenum
 		from (
 			select c.valuenum, c.charttime
@@ -610,8 +610,8 @@ FROM
 
 ALTER TABLE mimiciv.cohort_maternal_dataset ADD CONSTRAINT pk_cm_dataset PRIMARY KEY (subject_id, hadm_id);
 
--- Diagnostic-group indicator columns gdg_m01-gdg_m28. They are populated by
--- maternal_diagnoses_group_assign_en.sql (function
+-- Columnas indicadoras de grupos diagnósticos gdg_m01-gdg_m28. Se pueblan mediante
+-- maternal_diagnoses_group_assign_es.sql (función
 -- mimiciv.update_feature_diagnoses_cohort_maternal_dataset()).
 ALTER TABLE mimiciv.cohort_maternal_dataset ADD COLUMN gdg_m01 boolean;
 ALTER TABLE mimiciv.cohort_maternal_dataset ADD COLUMN gdg_m02 boolean;

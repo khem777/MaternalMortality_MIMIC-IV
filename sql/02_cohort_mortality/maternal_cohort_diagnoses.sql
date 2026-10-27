@@ -5,10 +5,10 @@
 -- with seq_num <= 4 of the admissions in mimiciv.cohort_maternal, with the number
 -- of admissions (diagnoses), without death (no_death) and with death (death).
 -- It is the base of the diagnostic-group classification applied by
--- maternal_diagnoses_group_load_en.sql / maternal_diagnoses_group_assign_en.sql.
+-- maternal_diagnoses_group_load.sql / maternal_diagnoses_group_assign.sql.
 -- Expected size: 4,116 distinct ICD codes.
 --
--- PREREQUISITE: maternal_cohort_en.sql (creates mimiciv.cohort_maternal).
+-- PREREQUISITE: maternal_cohort.sql (creates mimiciv.cohort_maternal).
 -- ============================================================================
 
 -- NOTE: plain CREATE TABLE (no DROP): it fails if mimiciv.cohort_maternal_diagnoses already exists.

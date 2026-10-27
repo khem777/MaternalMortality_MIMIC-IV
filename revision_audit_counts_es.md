@@ -94,19 +94,19 @@ Solo 10 de las 41 admisiones positivas del Modelo A son una muerte en la misma a
 
 ### Q1. Cohorte y pacientes repetidos
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 **Interpretación.** La cohorte tiene 25,736 admisiones de 15,084 pacientes, y 6,793 de esos pacientes tienen más de una admisión. Las cifras coinciden con el manuscrito. Con una partición por admisión, el mismo paciente puede quedar tanto en entrenamiento como en prueba.
 
 ### Q2. Positivos del Modelo A con la etiqueta enviada
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 **Interpretación.** La etiqueta actual marca 41 admisiones como positivas, que corresponden a 26 pacientes distintos. Por lo tanto, el modelo de mortalidad tiene menos eventos independientes de los que sugiere el manuscrito.
 
 ### Q3. Relación de cada positivo con la admisión de la muerte
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Relación | Admisiones | Pacientes | Muerte en una admisión de la cohorte | Admisión de la muerte con UCI | Esta admisión con UCI | Mediana de días hasta la muerte | Mínimo (días) | Máximo (días) |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -117,7 +117,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q4. Positivos aportados por cada paciente fallecido
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Positivos por paciente | Pacientes |
 |:---|---:|
@@ -130,7 +130,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q5. Redefinición: muerte en la misma admisión
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Muertes en la misma admisión | Con UCI | Sin UCI | En las primeras 24 h |
 |---:|---:|---:|---:|
@@ -140,7 +140,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q6. Versión de ICD de las admisiones
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Versión en la admisión | Admisiones | Casos de SMM | Positivos de mortalidad (Modelo A) | Partos detectados |
 |:---|---:|---:|---:|---:|
@@ -152,7 +152,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q7. Tasa de SMM por era (por 10,000 partos)
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Era | Por 10,000 partos |
 |:---|---:|
@@ -174,7 +174,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q8. Partos en admisiones ICD-9 (aproximación)
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Partos detectados, ICD-10 | Admisiones ICD-9 con 650 o V27 | Partos estimados en total |
 |---:|---:|---:|
@@ -184,13 +184,13 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q9. Pacientes con SMM
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 **Interpretación.** Las 475 admisiones con SMM corresponden a 426 pacientes, es decir, 49 admisiones repiten un paciente. La partición por paciente importa, pero con menos fuga que en la mortalidad.
 
 ### Q10. SMM frente a muerte en la misma admisión
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Combinación | Admisiones |
 |:---|---:|
@@ -203,7 +203,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q11. SMM frente a la etiqueta de mortalidad enviada
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Combinación | Admisiones |
 |:---|---:|
@@ -216,7 +216,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q12. Regla de inclusión: diagnóstico obstétrico en posición 4 o menor
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Medida | Regla del SQL (sin posición) | Con posición 4 o menor | Diferencia |
 |:---|---:|---:|---:|
@@ -228,7 +228,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q13. Disponibilidad de variables por UCI y SMM (% con valor)
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Grupo | Admisiones | Frecuencia cardíaca | Creatinina | Glucosa | Lactato | Hemoglobina |
 |:---|---:|---:|---:|---:|---:|---:|
@@ -241,7 +241,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q14. Cuándo aparece la primera creatinina
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Variable | Admisiones con valor | Mediana (horas) | Percentil 90 (horas) | Primer valor después de 24 h | % después de 24 h |
 |:---|---:|---:|---:|---:|---:|
@@ -251,7 +251,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q15. Casos de SMM por indicador
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Grupo de indicadores | Admisiones con el indicador | En hospitalización de parto | Fuera del parto |
 |:---|---:|---:|---:|
@@ -290,7 +290,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q16. Perfil de las muertes en la misma admisión
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Perfil | Versión de ICD | Bandera de parto | SMM | UCI | Muertes |
 |:---|:---|:---|:---|:---|---:|
@@ -304,7 +304,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q17. Año aproximado de ingreso y versión de ICD
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Año aproximado | Admisiones | Solo ICD-9 | Solo ICD-10 | % ICD-10 | Casos de SMM | Partos (ICD-10) | SMM por 100 admisiones ICD-10 |
 |:---|---:|---:|---:|---:|---:|---:|---:|
@@ -332,7 +332,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q18. Indicadores de SMM por grupo de año ancla
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Grupo de indicadores | 2008 - 2010 | 2011 - 2013 | 2014 - 2016 | 2017 - 2019 | 2020 - 2022 |
 |:---|---:|---:|---:|---:|---:|
@@ -348,7 +348,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q19. Indicadores distintos por admisión con SMM (etiqueta enviada)
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Indicadores distintos | Admisiones | En parto | Fuera del parto |
 |:---|---:|---:|---:|
@@ -364,7 +364,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q20. Definiciones alternativas de SMM (etiqueta enviada)
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Definición | Admisiones | Pacientes | Con UCI |
 |:---|---:|---:|---:|
@@ -379,7 +379,7 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.s
 
 ### Q21. SMM fuera del parto: capítulos obstétricos (etiqueta enviada)
 
-_Fuente: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`)_
 
 | Capítulo de códigos presente | Admisiones |
 |:---|---:|

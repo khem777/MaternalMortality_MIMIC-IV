@@ -17,8 +17,7 @@
 -- ============================================================================
 -- "NEAR-MISS" / SEVERE MATERNAL MORBIDITY (SMM) COHORT -- Modelo B
 -- ============================================================================
--- English version. Spanish original: smm_cohort_es.sql (kept in
--- this same folder).
+-- Spanish version of this script: smm_cohort_es.sql (same folder).
 --
 -- Source of the 21 indicators and ICD-10-CM/PCS codes: CDC (2023), via the
 -- HRSA Federally Available Data (FAD) Resource Document 2023, reproduced in
@@ -36,7 +35,7 @@
 --       O80-O82.x) -- comparable with published CDC/state rates
 --       (58-88 SMM per 10,000 deliveries).
 --   (b) The full expanded obstetric cohort
---       (maternal_cohort_expanded_en.sql) -- a wider denominator, more
+--       (maternal_cohort_expanded.sql) -- a wider denominator, more
 --       absolute cases, but no longer 1:1 comparable with published rates.
 --
 -- (Original note, superseded by the STATUS block at the top: this script has since
@@ -216,7 +215,7 @@ WHERE d.icd_version = 10
 
 -- ----------------------------------------------------------------------------
 -- Step 4: final cohort combining the expanded obstetric universe (Step 2 of
--- maternal_cohort_expanded_en.sql) + SMM outcome + delivery flag
+-- maternal_cohort_expanded.sql) + SMM outcome + delivery flag
 -- ----------------------------------------------------------------------------
 WITH maternal_admissions AS (
     SELECT DISTINCT

@@ -3,7 +3,7 @@
 -- Predictors restricted to the first 24 hours of the hospitalization
 -- (plan tasks T09-T13, T46, T52; comments R1-2, R2-4, R2-5, R2-7, R3-2, R3-3)
 -- ============================================================================
--- Why: in the submitted datasets (sql/03_cohort_smm/smm_dataset_en.sql and the
+-- Why: in the submitted datasets (sql/03_cohort_smm/smm_dataset.sql and the
 --   equivalent mortality dataset) every laboratory value and chart value is the
 --   FIRST value of the whole hospitalization, with no time limit; chart values
 --   come only from the first ICU stay; icu_stay and icu_stay_count use the whole
@@ -13,7 +13,7 @@
 --
 -- Decisions applied (see the plan, sheet Decisiones):
 --   D3  Prediction point = 24 hours after the hospital admission time (admittime + 24 h).
---   D10 Predictor window = from 24 hours BEFORE admittime to admittime + 24 h.  Values from the
+--   D10 Predictor window = from 24 hours BEFORE admittime up to the prediction point (admittime + 24 h).  Values from the
 --       triage or emergency visit that precede the admission time are available at the prediction
 --       point, so they are not leakage; the lower bound of 24 h before admission keeps them within
 --       the same episode.  (Q-F5 of the first run showed that with a window starting at admittime,

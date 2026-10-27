@@ -3,7 +3,7 @@
 -- Delivery-hospitalization flag (ICD-9-CM + ICD-10-CM/PCS + optional MS-DRG)
 -- ============================================================================
 -- Purpose (reviewer comments R1-3, R2-6, R2-14; decision D5(a) in plan v2):
---   The original flag (smm_cohort_en.sql) used ICD-10 Z37/O80/O82 only, so
+--   The original flag (smm_cohort.sql) used ICD-10 Z37/O80/O82 only, so
 --   every ICD-9-coded delivery was classified as "not a delivery".  This script
 --   builds a NEW view; the original view is NOT touched.
 --
@@ -122,7 +122,7 @@ LEFT JOIN mimiciv.hadm_delivery_drg_v2 drg ON drg.hadm_id = a.hadm_id;
 
 -- ----------------------------------------------------------------------------
 -- Q22 -- how many admissions does the improved flag add? (aggregate only)
---   Restricted to the obstetric universe used by smm_cohort_en.sql (female,
+--   Restricted to the obstetric universe used by smm_cohort.sql (female,
 --   approx. age 12-55, at least one expanded pregnancy diagnosis).
 -- ----------------------------------------------------------------------------
 WITH universe AS (

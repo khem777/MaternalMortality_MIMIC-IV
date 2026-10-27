@@ -61,23 +61,23 @@ docker-compose.yml           Entorno local de PostgreSQL + Jupyter
 requirements.txt  .env.example  LICENSE
 ```
 
-Los archivos con sufijo `_es.sql` (y los scripts con nombre en español) son los scripts originales en español que se conservan como rastro de auditoría; ejecute las versiones `_en.sql`.
+Cada script SQL tiene una versión en español con el mismo nombre más el sufijo `_es` (por ejemplo `smm_cohort.sql` y `smm_cohort_es.sql`). Las sentencias SQL son idénticas; solo se traducen los comentarios. Los scripts sin sufijo son los originales.
 
 Las salidas agregadas `data/outputs_*.txt` (solo conteos y métricas; sin identificadores ni filas a nivel de paciente) se publican con el código. Son, una por análisis: `main` (análisis principal), `no_indicator`, `resampling`, `era_temporal`, y los análisis de sensibilidad `first_admission`, `any_obstetric`, `icd10_only`, `label_ge2`, `no_icu_24h`, `labs_extended`, `icu_vars`, `excl_renal_only` y `smm_timing`, más `modelA` (factibilidad de la muerte).
 
 ## Instalación y ejecución
 
 1. **Obtenga acceso credencializado a MIMIC-IV** (ver [Acceso a los datos](#acceso-a-los-datos)) y descargue la exportación en CSV. El manuscrito usa **MIMIC-IV v3.1** (descargada el 18 de abril de 2025).
-2. **Cargue el esquema localmente** siguiendo `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` inicia PostgreSQL 13 y Jupyter; edite la ruta de `volumes:` de `db_mimiciv` hacia su propio directorio de datos y ejecute un solo contenedor por directorio de datos.
+2. **Cargue el esquema localmente** siguiendo `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` inicia PostgreSQL 13 y Jupyter; defina `MIMICIV_DATA_DIR` y `MIMICIV_CSV_DIR` en su `.env` (créelo antes como se explica en el paso 4; no hay que editar ningún script) y ejecute un solo contenedor por directorio de datos.
 3. **Construya las tablas** ejecutando los scripts SQL en este orden (el encabezado de cada script lista sus prerrequisitos; los scripts de `04_labels` y `05_predictors` crean objetos nuevos `*_v2` y no modifican las tablas base):
    1. Universo obstétrico y objetos base sobre los que se construyen los scripts posteriores, en este orden:
-      1. `sql/02_cohort_mortality/maternal_cohort_expanded_en.sql` — vista de diagnósticos obstétricos.
-      2. `sql/02_cohort_mortality/maternal_cohort_en.sql`, luego `maternal_cohort_dataset_en.sql` y `maternal_cohort_diagnoses_en.sql` — cohorte del modelo de mortalidad, su conjunto de datos y su tabla de diagnósticos.
-      3. `sql/02_cohort_mortality/maternal_diagnoses_group_load_en.sql`, luego `maternal_diagnoses_group_assign_en.sql` — catálogo y asignación de grupos de diagnóstico.
-      4. `sql/03_cohort_smm/smm_cohort_en.sql`, luego `smm_dataset_en.sql` — objetos base de SMM y su conjunto de datos.
+      1. `sql/02_cohort_mortality/maternal_cohort_expanded.sql` — vista de diagnósticos obstétricos.
+      2. `sql/02_cohort_mortality/maternal_cohort.sql`, luego `maternal_cohort_dataset.sql` y `maternal_cohort_diagnoses.sql` — cohorte del modelo de mortalidad, su conjunto de datos y su tabla de diagnósticos.
+      3. `sql/02_cohort_mortality/maternal_diagnoses_group_load.sql`, luego `maternal_diagnoses_group_assign.sql` — catálogo y asignación de grupos de diagnóstico.
+      4. `sql/03_cohort_smm/smm_cohort.sql`, luego `smm_dataset.sql` — objetos base de SMM y su conjunto de datos.
    2. `sql/04_labels/` en orden numérico (`01` a `06`, incluido `03b`).
    3. `sql/05_predictors/` en orden numérico (`01`, `02`).
-   4. *(Opcional)* `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`) reproduce los conteos de flujo de cohorte y tablas cruzadas. Requiere los objetos de los pasos 3.1 y 3.2 y crea solo tablas temporales.
+   4. *(Opcional)* `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `audit_counts_part3.sql`) reproduce los conteos de flujo de cohorte y tablas cruzadas. Requiere los objetos de los pasos 3.1 y 3.2 y crea solo tablas temporales.
 4. **Configure sus credenciales:** copie `.env.example` a `.env` en la raíz del proyecto y escriba la contraseña de su base de datos local. Verifique que el archivo se llame `.env` (no `.env.txt`). `.env` está ignorado por git y nunca debe subirse al repositorio.
 5. **Cree un entorno e instale las dependencias:**
    ```powershell

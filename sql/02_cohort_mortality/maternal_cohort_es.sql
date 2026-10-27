@@ -1,31 +1,35 @@
 -- ============================================================================
--- Maternal cohort (mortality model): mimiciv.cohort_maternal
+-- Cohorte materna (modelo de mortalidad): mimiciv.cohort_maternal
 -- ============================================================================
--- One row per hospital admission of a woman aged 12-55 years with at least one
--- obstetric / pregnancy-related diagnosis.
+-- Una fila por admisión hospitalaria de una mujer de 12 a 55 años con al menos un
+-- diagnóstico obstétrico / relacionado con el embarazo.
 --
--- Inclusion: gender = 'F'; diagnosis in mimiciv.pregnancy_diagnoses_expanded
--- (text match + ICD-9 630-679, V22-V24, V27, V28 + ICD-10 chapter O, Z33, Z34,
--- Z37, Z39); admission date within the date-shifted window YYYYMM 211001-221410;
--- age at admission = anchor_age + (admission year - anchor_year) between 12 and 55.
--- No ICU stay is required (icu_stay and icu_stay_count are kept as features).
+-- Inclusión: gender = 'F'; diagnóstico en mimiciv.pregnancy_diagnoses_expanded
+-- (coincidencia de texto + ICD-9 630-679, V22-V24, V27, V28 + ICD-10 capítulo O, Z33, Z34,
+-- Z37, Z39); fecha de admisión dentro de la ventana con fechas desplazadas YYYYMM 211001-221410 (véanse las notas);
+-- edad al momento de la admisión = anchor_age + (año de admisión - anchor_year) entre 12 y 55.
+-- No se exige una estancia en UCI (icu_stay e icu_stay_count se conservan como variables predictoras).
 --
--- Outcome: outcome = 1 if the admission, or any later admission of the same
--- subject_id, has a recorded deathtime (person-level death flag).
+-- Desenlace: outcome = 1 si la admisión, o cualquier admisión posterior del mismo
+-- subject_id, tiene un deathtime registrado (bandera de muerte a nivel de persona).
 --
--- Notes:
---   * patients.dob is not populated for adults in this schema, so age is computed
---     from anchor_age / anchor_year. The column `dob` is kept as NULL only so that
---     libraries/database.py (which selects `dob`) keeps working.
---   * Expected size: 25,736 admissions, 41 with outcome = 1.
+-- Notas:
+--   * La condición de fecha es TO_CHAR(admittime, 'YYYYMM') >= '211001' AND <= '221410'. El mes 14 no
+--     existe (probablemente se quiso '221031'), por lo que en la práctica el límite superior casi no excluye nada.
+--     Se conserva tal como está porque la cohorte validada (25,736 admisiones) se construyó con esta
+--     condición exacta; cambiarla cambiaría la cohorte. maternal_cohort_expanded_es.sql no aplica ningún filtro de fecha.
+--   * patients.dob no está poblada para adultos en este esquema, por lo que la edad se calcula
+--     a partir de anchor_age / anchor_year. La columna `dob` se conserva como NULL únicamente para que
+--     libraries/database.py (que selecciona `dob`) siga funcionando.
+--   * Tamaño esperado: 25,736 admisiones, 41 con outcome = 1.
 --
--- PREREQUISITE: sql/02_cohort_mortality/maternal_cohort_expanded_en.sql
---   (creates mimiciv.pregnancy_diagnoses_expanded).
--- NEXT: maternal_cohort_dataset_en.sql and maternal_cohort_diagnoses_en.sql.
+-- PRERREQUISITO: sql/02_cohort_mortality/maternal_cohort_expanded_es.sql
+--   (crea mimiciv.pregnancy_diagnoses_expanded).
+-- SIGUIENTE: maternal_cohort_dataset_es.sql y maternal_cohort_diagnoses_es.sql.
 -- ============================================================================
 
--- NOTE: plain CREATE TABLE (no DROP): it fails if mimiciv.cohort_maternal already exists.
--- Drop it yourself, deliberately, if you need to rebuild it.
+-- NOTA: CREATE TABLE simple (sin DROP): falla si mimiciv.cohort_maternal ya existe.
+-- Elimínela usted mismo, de forma deliberada, si necesita reconstruirla.
 
 CREATE TABLE mimiciv.cohort_maternal AS
 WITH maternal_admissions AS (
