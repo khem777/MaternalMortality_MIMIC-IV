@@ -57,6 +57,7 @@ docs/
   TRIPOD_AI_checklist_v4.docx                 Completed TRIPOD+AI reporting checklist
   Supplementary_Code_Lists_healthcare.docx    Complete ICD-9-CM / ICD-10-CM/PCS code lists (Tables A4-A6 = Appendix D of the article)
   Supplementary_Predictor_Missingness.docx    Availability of the predictors by outcome and stratum (Tables A7-A8 = Appendix E of the article)
+  *_es.docx                                   Spanish version of each of the three documents above (same name plus the suffix _es)
 analysis_plan_notebooks.md   Analysis plan of the notebooks (and _es version)
 revision_audit_counts.md     Counts documented with their source SQL in sql/06_audit_counts/ (and _es version)
 docker-compose.yml           Local PostgreSQL + Jupyter environment
