@@ -1,6 +1,6 @@
 # Plan del análisis desde cero, según los notebooks de revisión
 
-> **Solo conteos y métricas agregadas.** Este documento no contiene datos a nivel de paciente ni identificadores. Todo proviene de MIMIC-IV v3.1 (PhysioNet, sujeto al acuerdo de uso de datos) y de los notebooks de `notebooks/revision/` y sus informes `outputs_*.txt`.
+> **Solo conteos y métricas agregadas.** Este documento no contiene datos a nivel de paciente ni identificadores. Todo proviene de MIMIC-IV v3.1 (PhysioNet, sujeto al acuerdo de uso de datos) y de los notebooks de `notebooks/` y sus informes `data/outputs_*.txt`.
 
 Cómo se armaría el análisis del artículo sobre morbilidad materna grave (SMM) a 24 horas desde cero, ordenado por fase analítica y explicado solo con lo que hacen los notebooks 01 a 07: definir la cohorte, limpiar y tratar los faltantes, validar, medir, sacar resultados y comprobar su solidez. No incluye el trabajo en SQL ni el del manuscrito. No es parte del manuscrito: sirve para tener claro en qué momento se hizo cada técnica y cuál es su función.
 
@@ -13,7 +13,7 @@ El plan tiene 10 fases, 53 pasos y 135 análisis o resultados con detalle. Cada 
 - **Notebook:** de qué notebook sale (por ejemplo, NB 02).
 - **Técnicas:** las etiquetas del índice de técnicas (al final).
 - **Dónde:** notebook y sección (§) o función donde está el código.
-- **Salida:** archivo `outputs_*.txt` con las cifras; los números entre corchetes son las secciones del informe.
+- **Salida:** archivo `data/outputs_*.txt` con las cifras; los números entre corchetes son las secciones del informe.
 - **Referencias:** tarea del plan (T), decisión (D) o comentario de revisor (R1 a R3), solo cuando el notebook las cita.
 
 | Fase | Nombre | Notebooks | Pasos |
@@ -65,10 +65,10 @@ Detalle:
 **Notebook:** NB 01 a 07  
 **Técnicas:** Auditoría de conteos  
 **Dónde:** Celda inicial de cada notebook  
-**Salida:** `outputs_*.txt`  
+**Salida:** `data/outputs_*.txt`  
 **Referencias:** DUA, T43
 
-**Qué se hizo.** Cada notebook declara sus reglas en la primera celda. Ningún notebook muestra, exporta ni guarda filas, identificadores ni fechas. Los notebooks ya ejecutados no se modifican: los nuevos viven en notebooks/revision. El notebook 01 no escribe nada en disco y el 07 solo hace consultas de lectura. Los informes `outputs_*.txt` están cubiertos por .gitignore.
+**Qué se hizo.** Cada notebook declara sus reglas en la primera celda. Ningún notebook muestra, exporta ni guarda filas, identificadores ni fechas. Los notebooks están en `notebooks/` (01 a 07). El notebook 01 no escribe nada en disco y el 07 solo hace consultas de lectura. Los informes `data/outputs_*.txt` contienen solo conteos y métricas agregadas y se publican en el repositorio; los notebooks nunca escriben identificadores ni filas.
 
 **Para qué sirve.** Cumplir el acuerdo de uso de datos de MIMIC-IV y poder publicar el código sin riesgo.
 
@@ -435,7 +435,7 @@ Detalle:
 **Notebook:** NB 02 a 06  
 **Técnicas:** Modelos, ajuste y apilamiento, Auditoría de conteos  
 **Dónde:** 02 · report [7]  
-**Salida:** `outputs_*.txt` [7]
+**Salida:** `data/outputs_*.txt` [7]
 
 **Qué se hizo.** La tabla cuenta, por modelo y configuración, en cuántos de los 15 ajustes externos se eligió.
 
@@ -790,7 +790,7 @@ Detalle:
 
 **Notebook:** NB 02, 04, 06  
 **Técnicas:** Sensibilidad  
-**Dónde:** Todas las salidas `outputs_*.txt`
+**Dónde:** Todas las salidas `data/outputs_*.txt`
 
 **Qué se hizo.** Se compara en todas las variantes el AUROC del conjunto y su diferencia pareada con la regresión logística. En el análisis principal es +0.009 (0.002 a 0.016). El intervalo excluye el cero en `first_admission`, `any_obstetric`, `icu_vars` y `no_icu_24h`; lo incluye en `labs_extended`, `label_ge2`, `excl_renal_only` y `icd10_only` (en este último, el límite inferior es −0.000).
 

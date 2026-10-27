@@ -13,7 +13,7 @@ Solo 10 de las 41 admisiones positivas del Modelo A son una muerte en la misma a
 ## Cómo leer este documento
 
 - Esta es una copia del tablero de conteos usado durante la revisión del manuscrito, generada con los mismos datos (tablero publicado, versión 24, 2026-10-25).
-- Las secciones **Q1 a Q21**, **Q24** y **Q25** describen las etiquetas y las particiones del manuscrito enviado. Desde **Revisión v2** en adelante, los conteos provienen de los nuevos scripts de `sql/06_revision_labels` y `sql/07_revision_predictors`; los scripts originales conservan su SQL sin cambios (el 2026-10-25 solo se actualizaron sus comentarios de encabezado para indicar que definen la versión enviada). **Cifras clave del manuscrito revisado** resume los resultados de los notebooks de `notebooks/revision/`, que son solo salidas agregadas.
+- Las secciones **Q1 a Q21**, **Q24** y **Q25** describen las etiquetas y las particiones del manuscrito enviado. Desde **Revisión v2** en adelante, los conteos provienen de los nuevos scripts de `sql/04_labels` y `sql/05_predictors`; los scripts originales conservan su SQL sin cambios (el 2026-10-25 solo se actualizaron sus comentarios de encabezado para indicar que definen la versión enviada). **Cifras clave del manuscrito revisado** resume los resultados de los notebooks de `notebooks/`, que son solo salidas agregadas.
 - Cada sección nombra su fuente. Las consultas no devuelven filas individuales.
 - SMM = morbilidad materna grave; UCI = unidad de cuidados intensivos; DRG = grupo relacionado por el diagnóstico; CID = coagulación intravascular diseminada.
 - Las decisiones metodológicas (D1 a D16) están al final.
@@ -394,11 +394,11 @@ _Fuente: `sql/06_audit_counts/` (`audit_counts.sql`, `audit_counts_part2.sql`, `
 
 ### Revisión v2: etiquetas revisadas con la lista oficial de los CDC
 
-**Interpretación.** De aquí en adelante los conteos provienen de los nuevos scripts (carpeta sql/06_revision_labels): la lista oficial de los CDC en ICD-9-CM e ICD-10-CM/PCS, una bandera de parto que usa diagnósticos, procedimientos y DRG, y la muerte en la misma admisión. No se tocó el SQL de los scripts originales. Los resultados de Q1 a Q18 describen las etiquetas del manuscrito enviado.
+**Interpretación.** De aquí en adelante los conteos provienen de los nuevos scripts (carpeta sql/04_labels): la lista oficial de los CDC en ICD-9-CM e ICD-10-CM/PCS, una bandera de parto que usa diagnósticos, procedimientos y DRG, y la muerte en la misma admisión. No se tocó el SQL de los scripts originales. Los resultados de Q1 a Q18 describen las etiquetas del manuscrito enviado.
 
 ### Q-C1. Cohorte y etiquetas nuevas
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Partos (bandera nueva) | Admisiones con SMM en parto | Admisiones con SMM, cualquier admisión | Muertes en la misma admisión | De ellas, en parto |
 |---:|---:|---:|---:|---:|
@@ -408,7 +408,7 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 
 ### Q22. Bandera de parto original frente a la nueva
 
-_Fuente: `sql/06_revision_labels/02_delivery_flag.sql`_
+_Fuente: `sql/04_labels/02_delivery_flag.sql`_
 
 | Medida | Admisiones |
 |:---|---:|
@@ -426,7 +426,7 @@ _Fuente: `sql/06_revision_labels/02_delivery_flag.sql`_
 
 ### Q-C2. SMM en partos por versión de codificación
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Codificación de la admisión | Partos | Con SMM | % con SMM | Muertes en la misma admisión |
 |:---|---:|---:|---:|---:|
@@ -439,7 +439,7 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 
 ### Q-C3. SMM en partos por indicador y versión
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Indicador | ICD-10 | ICD-9 | Total | % de partos con SMM |
 |:---|---:|---:|---:|---:|
@@ -466,7 +466,7 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 
 ### Q-C4. Lista oficial frente a la etiqueta original
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Combinación | Admisiones |
 |:---|---:|
@@ -478,7 +478,7 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 
 ### Q-C5. Definiciones alternativas de SMM en partos
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Definición | Admisiones |
 |:---|---:|
@@ -486,11 +486,11 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 | Sin contar la insuficiencia renal como único indicador | 297 |
 | Dos o más indicadores | 130 |
 
-**Interpretación.** Si la insuficiencia renal aguda aislada no cuenta como SMM, los eventos bajan de 447 a 297: 150 partos (33.6%) tienen solo ese indicador. Con dos o más indicadores quedan 130. El análisis de sensibilidad de la tarea T50 era necesario, porque un tercio del desenlace depende de un único código. Se ejecutó en `notebooks/revision/06_smm_renal_only_sensitivity.ipynb` (salida agregada `outputs_excl_renal_only.txt`): entre los partos elegibles, 150 de los 445 eventos de SMM tienen la insuficiencia renal aguda como único indicador, y sin ellos (19,233 admisiones, 13,610 pacientes, 295 eventos, 1.53%) el AUROC es 0.792 (0.763-0.819) para la regresión logística y 0.795 (0.765-0.822) para el conjunto apilado, la diferencia conjunto menos regresión logística es +0.004 (-0.002 a 0.010), el AUPRC es 0.103 y 0.110, y el conjunto captura el 35.5% (30.7-40.7%) de los eventos en el 5% superior. Por lo tanto, la discriminación es similar a la del análisis principal (0.780 y 0.789); el AUPRC es menor porque la prevalencia baja de 2.30% a 1.53%.
+**Interpretación.** Si la insuficiencia renal aguda aislada no cuenta como SMM, los eventos bajan de 447 a 297: 150 partos (33.6%) tienen solo ese indicador. Con dos o más indicadores quedan 130. El análisis de sensibilidad de la tarea T50 era necesario, porque un tercio del desenlace depende de un único código. Se ejecutó en `notebooks/06_smm_renal_only_sensitivity.ipynb` (salida agregada `data/outputs_excl_renal_only.txt`): entre los partos elegibles, 150 de los 445 eventos de SMM tienen la insuficiencia renal aguda como único indicador, y sin ellos (19,233 admisiones, 13,610 pacientes, 295 eventos, 1.53%) el AUROC es 0.792 (0.763-0.819) para la regresión logística y 0.795 (0.765-0.822) para el conjunto apilado, la diferencia conjunto menos regresión logística es +0.004 (-0.002 a 0.010), el AUPRC es 0.103 y 0.110, y el conjunto captura el 35.5% (30.7-40.7%) de los eventos en el 5% superior. Por lo tanto, la discriminación es similar a la del análisis principal (0.780 y 0.789); el AUPRC es menor porque la prevalencia baja de 2.30% a 1.53%.
 
 ### Q-C6. Pacientes con más de una admisión
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Pacientes con más de una admisión | Pacientes | % con varias admisiones | Máximo de admisiones por paciente |
 |---:|---:|---:|---:|
@@ -500,7 +500,7 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 
 ### Q-C7. Códigos que tenía la lista original y que la oficial no tiene
 
-_Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
+_Fuente: `sql/04_labels/03_labels_same_admission.sql`_
 
 | Código | Versión | Admisiones | Estado en la lista oficial |
 |:---|:---|---:|:---|
@@ -513,7 +513,7 @@ _Fuente: `sql/06_revision_labels/03_labels_same_admission.sql`_
 
 ### Q23. Dataset del manuscrito frente a la nueva etiqueta
 
-_Fuente: `sql/06_revision_labels/03b_reconcile_old_labels.sql`_
+_Fuente: `sql/04_labels/03b_reconcile_old_labels.sql`_
 
 | Medida | Admisiones |
 |:---|---:|
@@ -530,7 +530,7 @@ _Fuente: `sql/06_revision_labels/03b_reconcile_old_labels.sql`_
 
 ### Q24. Solapamiento de pacientes en el hold-out enviado
 
-_Fuente: `notebooks/revision/01_audit_patient_overlap.ipynb`_
+_Fuente: `notebooks/01_patient_overlap.ipynb`_
 
 | Medida | Modelo A (mortalidad) | Modelo B (SMM) |
 |:---|---:|---:|
@@ -549,7 +549,7 @@ _Fuente: `notebooks/revision/01_audit_patient_overlap.ipynb`_
 
 ### Q25. Solapamiento en la validación cruzada y con otras semillas
 
-_Fuente: `notebooks/revision/01_audit_patient_overlap.ipynb`_
+_Fuente: `notebooks/01_patient_overlap.ipynb`_
 
 | Medida | Modelo A (mortalidad) | Modelo B (SMM) |
 |:---|:---|:---|
@@ -563,7 +563,7 @@ _Fuente: `notebooks/revision/01_audit_patient_overlap.ipynb`_
 
 ### Q-D1. Posición más baja del diagnóstico obstétrico
 
-_Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
+_Fuente: `sql/04_labels/04_cohort_obstetric_flags.sql`_
 
 | Posición más baja | Admisiones | Partos | Con SMM | SMM en parto | Muertes en la misma admisión | Con UCI |
 |:---|---:|---:|---:|---:|---:|---:|
@@ -579,7 +579,7 @@ _Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
 
 ### Q-D3. Tipo del primer código obstétrico y regla de posición
 
-_Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
+_Fuente: `sql/04_labels/04_cohort_obstetric_flags.sql`_
 
 | Grupo del primer código | Posición 4 o menor | Admisiones | Partos | Con SMM | Muertes en la misma admisión |
 |:---|:---|---:|---:|---:|---:|
@@ -598,7 +598,7 @@ _Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
 
 ### Q-D4. Admisiones con evidencia obstétrica solo en el texto del título
 
-_Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
+_Fuente: `sql/04_labels/04_cohort_obstetric_flags.sql`_
 
 | Código | Admisiones |
 |:---|---:|
@@ -622,7 +622,7 @@ _Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
 
 ### Q-D5. Efecto de cada regla de cohorte sobre las etiquetas revisadas
 
-_Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
+_Fuente: `sql/04_labels/04_cohort_obstetric_flags.sql`_
 
 | Regla | Admisiones | Pacientes | Partos | SMM, cualquier admisión | SMM en parto | Muertes en la misma admisión | Muertes en parto |
 |:---|---:|---:|---:|---:|---:|---:|---:|
@@ -635,7 +635,7 @@ _Fuente: `sql/06_revision_labels/04_cohort_obstetric_flags.sql`_
 
 ### Q-E1. Muertes dentro de un horizonte desde la admisión (cualquier causa)
 
-_Fuente: `sql/06_revision_labels/05_death_horizon_counts.sql`_
+_Fuente: `sql/04_labels/05_death_horizon_counts.sql`_
 
 | Ventana desde la admisión | Pacientes fallecidos | Admisiones | Pacientes, admisión de parto | Solo registro hospitalario | Agregados por fecha de muerte estatal (dod) |
 |:---|---:|---:|---:|---:|---:|
@@ -648,7 +648,7 @@ _Fuente: `sql/06_revision_labels/05_death_horizon_counts.sql`_
 
 ### Q-E4. Días desde la admisión hasta la primera muerte posterior
 
-_Fuente: `sql/06_revision_labels/05_death_horizon_counts.sql`_
+_Fuente: `sql/04_labels/05_death_horizon_counts.sql`_
 
 | Días desde la admisión | Admisiones | Pacientes |
 |:---|---:|---:|
@@ -662,7 +662,7 @@ _Fuente: `sql/06_revision_labels/05_death_horizon_counts.sql`_
 
 ### Q-F1. Elegibilidad para un modelo de 24 h y eventos perdidos
 
-_Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
+_Fuente: `sql/05_predictors/01_predictors_24h.sql`_
 
 | Alcance | Admisiones | Elegibles a las 24 h | Alta con vida antes de 24 h | SMM | SMM elegibles | Muertes | Muertes elegibles | Muertes antes de 24 h |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -674,7 +674,7 @@ _Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 ### Q-F2. Horas desde la admisión hasta la muerte
 
-_Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
+_Fuente: `sql/05_predictors/01_predictors_24h.sql`_
 
 | Horas desde la admisión | Muertes en la misma admisión | De ellas, en parto | UCI en las primeras 24 h |
 |:---|---:|---:|---:|
@@ -688,7 +688,7 @@ _Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 ### Q-F3. Momento del primer ingreso a UCI y desenlaces
 
-_Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
+_Fuente: `sql/05_predictors/01_predictors_24h.sql`_
 
 | Primer ingreso a UCI | Admisiones | Partos | SMM | SMM en parto | Muertes |
 |:---|---:|---:|---:|---:|---:|
@@ -702,7 +702,7 @@ _Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 ### Q-F4. Disponibilidad de cada variable en la ventana de predictores (partos elegibles, ventana D10)
 
-_Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
+_Fuente: `sql/05_predictors/01_predictors_24h.sql`_
 
 | Variable | Rol | Admisiones con valor | Total | Con UCI en 24 h | Sin UCI en 24 h | Con SMM |
 |:---|:---|---:|---:|---:|---:|---:|
@@ -738,7 +738,7 @@ _Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 ### Q-F5. Laboratorios del parto: efecto de la ventana desde 24 h antes de la admisión hasta 24 h después
 
-_Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
+_Fuente: `sql/05_predictors/01_predictors_24h.sql`_
 
 | Laboratorio | Primer valor en la ventana | De ellos, antes de la admisión | Solo después de 24 h | Sin valor | % en la nueva ventana | % con la ventana anterior (desde la admisión) |
 |:---|---:|---:|---:|---:|---:|---:|
@@ -760,7 +760,7 @@ _Fuente: `sql/07_revision_predictors/01_predictors_24h.sql`_
 
 ### Q-G0. Diccionario final de predictores y regla de cobertura (D11)
 
-_Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+_Fuente: `sql/05_predictors/02_dictionary_missingness.sql`_
 
 | Variable | Unidad | Cobertura en partos elegibles | Rol final | Indicador de ausencia de datos en el modelo principal | Límites de plausibilidad propuestos |
 |:---|:---|---:|:---|:---|:---|
@@ -796,7 +796,7 @@ _Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 ### Q-G1. Disponibilidad de las tres pruebas de laboratorio principales por estrato
 
-_Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+_Fuente: `sql/05_predictors/02_dictionary_missingness.sql`_
 
 | Alcance | Estrato | Admisiones elegibles | Con hemoglobina | % hemoglobina | Con hematocrito | Con creatinina | % creatinina | Con las tres | Con ninguna | % con ninguna |
 |:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -825,7 +825,7 @@ _Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 ### Q-G2. Patrones de ausencia de datos y redundancia entre hemoglobina y hematocrito
 
-_Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+_Fuente: `sql/05_predictors/02_dictionary_missingness.sql`_
 
 | Patrón | Admisiones | % de los partos elegibles | Con SMM |
 |:---|---:|---:|---:|
@@ -840,7 +840,7 @@ _Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 ### Q-G3. Disponibilidad de creatinina por tipo de SMM
 
-_Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+_Fuente: `sql/05_predictors/02_dictionary_missingness.sql`_
 
 | Tipo | Admisiones | Con creatinina | % creatinina | Con hemoglobina | % hemoglobina | Con UCI en 24 h |
 |:---|---:|---:|---:|---:|---:|---:|
@@ -853,7 +853,7 @@ _Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 ### Q-G4. Distribución de las tres pruebas de laboratorio y valores fuera de los límites propuestos
 
-_Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+_Fuente: `sql/05_predictors/02_dictionary_missingness.sql`_
 
 | Laboratorio | Unidad | Valores | P1 | P5 | P25 | P50 | P75 | P95 | P99 | Bajo el límite inferior | Sobre el límite superior |
 |:---|:---|---:|:---|:---|:---|:---|:---|:---|:---|---:|---:|
@@ -865,7 +865,7 @@ _Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 ### Q-G5. Momento del primer valor respecto a la hora de admisión
 
-_Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
+_Fuente: `sql/05_predictors/02_dictionary_missingness.sql`_
 
 | Laboratorio | Valores | P10 (horas) | Mediana (horas) | P90 (horas) | Antes de la admisión | % antes de la admisión | Después de 12 h | % después de 12 h |
 |:---|---:|:---|:---|:---|---:|---:|---:|---:|
@@ -877,7 +877,7 @@ _Fuente: `sql/07_revision_predictors/02_dictionary_missingness.sql`_
 
 ### Q-H1. SMM frente a muerte en la misma admisión con las etiquetas revisadas
 
-_Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+_Fuente: `sql/04_labels/06_smm_death_overlap.sql`_
 
 | Alcance | Admisiones | Ni SMM ni muerte | Solo SMM | Solo muerte | SMM y muerte | Total con SMM | Total de muertes | % de SMM sin muerte |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -889,7 +889,7 @@ _Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 
 ### Q-H2. Perfil de las muertes con la etiqueta revisada
 
-_Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+_Fuente: `sql/04_labels/06_smm_death_overlap.sql`_
 
 | Perfil | Parto | Elegible a las 24 h | Con SMM | Muertes |
 |:---|:---|:---|:---|---:|
@@ -902,7 +902,7 @@ _Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 
 ### Q-H3. SMM por número de indicadores y muerte en la misma admisión
 
-_Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+_Fuente: `sql/04_labels/06_smm_death_overlap.sql`_
 
 | Indicadores por admisión | Admisiones con SMM | Murieron en la misma admisión | % que murió |
 |:---|---:|---:|---:|
@@ -922,7 +922,7 @@ _Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 
 ### Q-H4. Indicadores de SMM presentes en las admisiones con muerte
 
-_Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
+_Fuente: `sql/04_labels/06_smm_death_overlap.sql`_
 
 | Indicador | Admisiones con muerte |
 |:---|---:|
@@ -943,7 +943,7 @@ _Fuente: `sql/06_revision_labels/06_smm_death_overlap.sql`_
 
 ### Cifras clave del manuscrito revisado
 
-_Fuente: `notebooks/revision/` (`02_grouped_validation_smm`, `03_resampling_comparison_smm`, `04_creatinine_indicator_sensitivity_smm`, `05_era_temporal_validation_smm`, `06_smm_renal_only_sensitivity`, `07_smm_timing_vs_prediction_time`; salidas agregadas `outputs_*.txt`)_
+_Fuente: `notebooks/` (`02_grouped_validation_smm`, `03_resampling_comparison_smm`, `04_creatinine_indicator_sensitivity_smm`, `05_era_temporal_validation_smm`, `06_smm_renal_only_sensitivity`, `07_smm_timing_vs_prediction_time`; salidas agregadas `data/outputs_*.txt`)_
 
 | Cifra | Valor | Nota |
 |:---|:---|:---|
@@ -970,7 +970,7 @@ _Fuente: `notebooks/revision/` (`02_grouped_validation_smm`, `03_resampling_comp
 
 ### Q-I1. SMM por grupo de año de anclaje y versión de codificación (partos elegibles)
 
-_Fuente: `notebooks/revision/05_era_temporal_validation_smm.ipynb` (`outputs_era_temporal.txt`)_
+_Fuente: `notebooks/05_era_temporal_validation_smm.ipynb` (`data/outputs_era_temporal.txt`)_
 
 | Grupo | Partos elegibles | Eventos de SMM | Prevalencia |
 |:---|---:|---:|---:|
@@ -987,7 +987,7 @@ _Fuente: `notebooks/revision/05_era_temporal_validation_smm.ipynb` (`outputs_era
 
 ### Q-J1. Momento de los indicadores de SMM respecto al momento de predicción
 
-_Fuente: `notebooks/revision/07_smm_timing_vs_prediction_time.ipynb` (`outputs_smm_timing.txt`)_
+_Fuente: `notebooks/07_smm_timing_vs_prediction_time.ipynb` (`data/outputs_smm_timing.txt`)_
 
 El momento de predicción T es la hora de admisión más 24 h. Los códigos de diagnóstico ICD no tienen fecha, por lo que no se pueden ubicar respecto a T. Los códigos de procedimiento ICD tienen solo una fecha de calendario (`chartdate`): un procedimiento es con certeza anterior a T si su fecha más un día es igual o anterior a T, con certeza posterior a T si su fecha es igual o posterior a T, y ambiguo en los demás casos. Cada una de las 445 admisiones con SMM entre los partos elegibles cae en una categoría:
 
@@ -1038,12 +1038,12 @@ Verificaciones de consistencia (todas según lo esperado): las 42 hospitalizacio
 | Origen | Contenido |
 |:---|:---|
 | `sql/06_audit_counts/` | Auditoría Q1 a Q21 sobre las etiquetas enviadas |
-| `sql/06_revision_labels/` | Listas oficiales de códigos, bandera de parto, etiquetas de la misma admisión, regla de cohorte y horizontes de muerte (Q22, Q23, Q-C1 a Q-C7, Q-D1 a Q-D5, Q-E1 a Q-E4) |
-| `sql/07_revision_predictors/` | Predictores con una ventana de 24 h y su disponibilidad (Q-F1 a Q-F5); diccionario final de predictores y ausencia de datos (Q-G0 a Q-G5) |
-| `sql/06_revision_labels/06_smm_death_overlap.sql` | SMM y muerte en la misma admisión con las etiquetas revisadas (Q-H1 a Q-H4) |
-| `notebooks/revision/01_audit_patient_overlap.ipynb` | Solapamiento de pacientes entre entrenamiento y prueba (Q24, Q25) |
-| `notebooks/revision/02_grouped_validation_smm.ipynb` a `05_era_temporal_validation_smm.ipynb` | Validación agrupada, comparación de remuestreo, indicador de creatinina y validación por era/temporal (Cifras clave, Q-I1) |
-| `notebooks/revision/06_smm_renal_only_sensitivity.ipynb` | Sensibilidad sin las admisiones cuyo único indicador de SMM es la insuficiencia renal aguda (Q-C5, T50) |
-| `notebooks/revision/07_smm_timing_vs_prediction_time.ipynb` | Momento de los indicadores de SMM respecto al momento de predicción (Q-J1, T52) |
+| `sql/04_labels/` | Listas oficiales de códigos, bandera de parto, etiquetas de la misma admisión, regla de cohorte y horizontes de muerte (Q22, Q23, Q-C1 a Q-C7, Q-D1 a Q-D5, Q-E1 a Q-E4) |
+| `sql/05_predictors/` | Predictores con una ventana de 24 h y su disponibilidad (Q-F1 a Q-F5); diccionario final de predictores y ausencia de datos (Q-G0 a Q-G5) |
+| `sql/04_labels/06_smm_death_overlap.sql` | SMM y muerte en la misma admisión con las etiquetas revisadas (Q-H1 a Q-H4) |
+| `notebooks/01_patient_overlap.ipynb` | Solapamiento de pacientes entre entrenamiento y prueba (Q24, Q25) |
+| `notebooks/02_grouped_validation_smm.ipynb` a `05_era_temporal_validation_smm.ipynb` | Validación agrupada, comparación de remuestreo, indicador de creatinina y validación por era/temporal (Cifras clave, Q-I1) |
+| `notebooks/06_smm_renal_only_sensitivity.ipynb` | Sensibilidad sin las admisiones cuyo único indicador de SMM es la insuficiencia renal aguda (Q-C5, T50) |
+| `notebooks/07_smm_timing_vs_prediction_time.ipynb` | Momento de los indicadores de SMM respecto al momento de predicción (Q-J1, T52) |
 
 Las consultas Q-D0, Q-D2, Q-E0, Q-E2, Q-E3, Q-F0 y Q-G6 (unidades registradas) se usan en el texto de las secciones y en el plan de revisión, pero aquí no tienen una tabla propia.

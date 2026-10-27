@@ -1,6 +1,6 @@
 # Analysis plan from scratch, according to the revision notebooks
 
-> **Aggregate counts and metrics only.** This document contains no patient-level data or identifiers. Everything comes from MIMIC-IV v3.1 (PhysioNet, use subject to the data use agreement) and from the notebooks in `notebooks/revision/` and their `outputs_*.txt` reports.
+> **Aggregate counts and metrics only.** This document contains no patient-level data or identifiers. Everything comes from MIMIC-IV v3.1 (PhysioNet, use subject to the data use agreement) and from the notebooks in `notebooks/` and their `data/outputs_*.txt` reports.
 
 How the analysis of the article on severe maternal morbidity (SMM) at 24 hours would be built from scratch, organized by analytical phase and explained only with what notebooks 01 to 07 do: define the cohort, clean the data and handle missing values, validate, measure, obtain results and check their robustness. It does not include the SQL work or the manuscript work. It is not part of the manuscript: its purpose is to make clear when each technique was applied and what its function is.
 
@@ -13,7 +13,7 @@ The plan has 10 phases, 53 steps and 135 analyses or results with detail. Each s
 - **Notebook:** which notebook it comes from (for example, NB 02).
 - **Techniques:** the labels of the technique index (at the end).
 - **Where:** notebook and section (§) or function where the code is.
-- **Output:** the `outputs_*.txt` file with the figures; numbers in brackets are sections of the report.
+- **Output:** the `data/outputs_*.txt` file with the figures; numbers in brackets are sections of the report.
 - **References:** plan task (T), decision (D) or reviewer comment (R1 to R3), only when the notebook cites them.
 
 | Phase | Name | Notebooks | Steps |
@@ -65,10 +65,10 @@ Detail:
 **Notebook:** NB 01 to 07  
 **Techniques:** Count audit  
 **Where:** First cell of each notebook  
-**Output:** `outputs_*.txt`  
+**Output:** `data/outputs_*.txt`  
 **References:** DUA, T43
 
-**What was done.** Each notebook declares its rules in the first cell. No notebook shows, exports or saves rows, identifiers or dates. Notebooks that were already executed are not modified: the new ones live in notebooks/revision. Notebook 01 writes nothing to disk and 07 only runs read queries. The `outputs_*.txt` reports are covered by .gitignore.
+**What was done.** Each notebook declares its rules in the first cell. No notebook shows, exports or saves rows, identifiers or dates. The notebooks are in `notebooks/` (01 to 07). Notebook 01 writes nothing to disk and 07 only runs read queries. The `data/outputs_*.txt` reports contain aggregate counts and metrics only and are tracked in the repository; the notebooks never write identifiers or rows.
 
 **What it is for.** Comply with the MIMIC-IV data use agreement and be able to publish the code without risk.
 
@@ -435,7 +435,7 @@ Detail:
 **Notebook:** NB 02 to 06  
 **Techniques:** Models, tuning and stacking, Count audit  
 **Where:** 02 · report [7]  
-**Output:** `outputs_*.txt` [7]
+**Output:** `data/outputs_*.txt` [7]
 
 **What was done.** The table counts, by model and configuration, in how many of the 15 outer fits it was chosen.
 
@@ -790,7 +790,7 @@ Detail:
 
 **Notebook:** NB 02, 04, 06  
 **Techniques:** Sensitivity  
-**Where:** All `outputs_*.txt` outputs
+**Where:** All `data/outputs_*.txt` outputs
 
 **What was done.** In all variants the AUROC of the ensemble and its paired difference with logistic regression are compared. In the main analysis it is +0.009 (0.002 to 0.016). The interval excludes zero in `first_admission`, `any_obstetric`, `icu_vars` and `no_icu_24h`; it includes it in `labs_extended`, `label_ge2`, `excl_renal_only` and `icd10_only` (in the latter, the lower limit is −0.000).
 
