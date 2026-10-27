@@ -39,6 +39,7 @@ sql/
   04_labels/                 Labels: official CDC code lists, delivery flag, same-admission labels,
                              cohort rule, death horizons, SMM-death overlap
   05_predictors/             Predictors in the 24-hour window, final dictionary and missingness
+  06_audit_counts/           Optional: cohort-flow and cross-tabulation counts (audit_counts_*.sql); create only temporary tables
 notebooks/
   01_patient_overlap.ipynb                       Patient overlap between training and evaluation samples under admission-level splitting
   02_grouped_validation_smm.ipynb                Main analysis: grouped nested validation of the SMM models
@@ -52,6 +53,8 @@ libraries/
   functions.py               Small statistics helper
 data/
   outputs_*.txt              Aggregate outputs of the notebooks (no patient-level data)
+analysis_plan_notebooks.md   Analysis plan of the notebooks (and _es version)
+revision_audit_counts.md     Counts documented with their source SQL in sql/06_audit_counts/ (and _es version)
 docker-compose.yml           Local PostgreSQL + Jupyter environment
 requirements.txt  .env.example  LICENSE
 ```
@@ -65,9 +68,14 @@ The aggregate outputs `data/outputs_*.txt` (counts and metrics only; no identifi
 1. **Get credentialed access to MIMIC-IV** (see [Data access](#data-access)) and download the CSV export. The manuscript uses **MIMIC-IV v3.1** (downloaded on 18 April 2025).
 2. **Load the schema locally** following `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` starts PostgreSQL 13 and Jupyter; edit the `volumes:` path of `db_mimiciv` to your own data directory and run only one container per data directory.
 3. **Build the tables** by running the SQL scripts in this order (the header of each script lists its prerequisites; the scripts of `04_labels` and `05_predictors` create new `*_v2` objects and do not modify the base tables):
-   1. `sql/02_cohort_mortality/` and `sql/03_cohort_smm/` — obstetric universe and the base objects the later scripts build on.
+   1. Obstetric universe and base objects the later scripts build on, in this order:
+      1. `sql/02_cohort_mortality/maternal_cohort_expanded_en.sql` — obstetric diagnosis view.
+      2. `sql/02_cohort_mortality/maternal_cohort_en.sql`, then `maternal_cohort_dataset_en.sql` and `maternal_cohort_diagnoses_en.sql` — mortality-model cohort, its dataset and its diagnosis table.
+      3. `sql/02_cohort_mortality/maternal_diagnoses_group_load_en.sql`, then `maternal_diagnoses_group_assign_en.sql` — diagnostic-group catalogue and assignment.
+      4. `sql/03_cohort_smm/smm_cohort_en.sql`, then `smm_dataset_en.sql` — SMM base objects and dataset.
    2. `sql/04_labels/` in numeric order (`01` to `06`, including `03b`).
    3. `sql/05_predictors/` in numeric order (`01`, `02`).
+   4. *(Optional)* `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`) reproduces the cohort-flow and cross-tabulation counts. It needs the objects from steps 3.1 and 3.2 and creates only temporary tables.
 4. **Set your credentials:** copy `.env.example` to `.env` in the project root and fill in your local database password. Check that the file is named `.env` (not `.env.txt`). `.env` is git-ignored and must never be committed.
 5. **Create an environment and install dependencies:**
    ```powershell

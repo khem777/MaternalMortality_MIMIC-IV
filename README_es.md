@@ -41,6 +41,7 @@ sql/
   04_labels/                 Etiquetas: listas oficiales de códigos de los CDC, bandera de parto, etiquetas
                              de la misma admisión, regla de cohorte, horizontes de muerte, solapamiento SMM-muerte
   05_predictors/             Predictores en la ventana de 24 horas, diccionario final y faltantes
+  06_audit_counts/           Opcional: conteos de flujo de cohorte y tablas cruzadas (audit_counts_*.sql); solo crean tablas temporales
 notebooks/
   01_patient_overlap.ipynb                       Solapamiento de pacientes entre entrenamiento y evaluación con particiones por admisión
   02_grouped_validation_smm.ipynb                Análisis principal: validación anidada agrupada de los modelos de SMM
@@ -54,6 +55,8 @@ libraries/
   functions.py               Pequeña utilidad estadística
 data/
   outputs_*.txt              Salidas agregadas de los notebooks (sin datos a nivel de paciente)
+analysis_plan_notebooks_es.md   Plan de análisis de los notebooks (y versión en inglés)
+revision_audit_counts_es.md     Conteos documentados con su SQL fuente en sql/06_audit_counts/ (y versión en inglés)
 docker-compose.yml           Entorno local de PostgreSQL + Jupyter
 requirements.txt  .env.example  LICENSE
 ```
@@ -67,9 +70,14 @@ Las salidas agregadas `data/outputs_*.txt` (solo conteos y métricas; sin identi
 1. **Obtenga acceso credencializado a MIMIC-IV** (ver [Acceso a los datos](#acceso-a-los-datos)) y descargue la exportación en CSV. El manuscrito usa **MIMIC-IV v3.1** (descargada el 18 de abril de 2025).
 2. **Cargue el esquema localmente** siguiendo `sql/01_load_mimic_iv_schema/README.md`. `docker-compose.yml` inicia PostgreSQL 13 y Jupyter; edite la ruta de `volumes:` de `db_mimiciv` hacia su propio directorio de datos y ejecute un solo contenedor por directorio de datos.
 3. **Construya las tablas** ejecutando los scripts SQL en este orden (el encabezado de cada script lista sus prerrequisitos; los scripts de `04_labels` y `05_predictors` crean objetos nuevos `*_v2` y no modifican las tablas base):
-   1. `sql/02_cohort_mortality/` y `sql/03_cohort_smm/` — universo obstétrico y los objetos base sobre los que se construyen los scripts posteriores.
+   1. Universo obstétrico y objetos base sobre los que se construyen los scripts posteriores, en este orden:
+      1. `sql/02_cohort_mortality/maternal_cohort_expanded_en.sql` — vista de diagnósticos obstétricos.
+      2. `sql/02_cohort_mortality/maternal_cohort_en.sql`, luego `maternal_cohort_dataset_en.sql` y `maternal_cohort_diagnoses_en.sql` — cohorte del modelo de mortalidad, su conjunto de datos y su tabla de diagnósticos.
+      3. `sql/02_cohort_mortality/maternal_diagnoses_group_load_en.sql`, luego `maternal_diagnoses_group_assign_en.sql` — catálogo y asignación de grupos de diagnóstico.
+      4. `sql/03_cohort_smm/smm_cohort_en.sql`, luego `smm_dataset_en.sql` — objetos base de SMM y su conjunto de datos.
    2. `sql/04_labels/` en orden numérico (`01` a `06`, incluido `03b`).
    3. `sql/05_predictors/` en orden numérico (`01`, `02`).
+   4. *(Opcional)* `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`) reproduce los conteos de flujo de cohorte y tablas cruzadas. Requiere los objetos de los pasos 3.1 y 3.2 y crea solo tablas temporales.
 4. **Configure sus credenciales:** copie `.env.example` a `.env` en la raíz del proyecto y escriba la contraseña de su base de datos local. Verifique que el archivo se llame `.env` (no `.env.txt`). `.env` está ignorado por git y nunca debe subirse al repositorio.
 5. **Cree un entorno e instale las dependencias:**
    ```powershell

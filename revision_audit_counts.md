@@ -92,19 +92,19 @@ Only 10 of the 41 positive admissions for Model A are a death in the same admiss
 
 ### Q1. Cohort and repeat patients
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 **Interpretation.** The cohort has 25,736 admissions from 15,084 patients, and 6,793 of those patients have more than one admission. The figures match the manuscript. With an admission-level split, the same patient can end up in both training and test.
 
 ### Q2. Model A positives under the submitted label
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 **Interpretation.** The current label flags 41 admissions as positive, which correspond to 26 distinct patients. The mortality model therefore has fewer independent events than the manuscript suggests.
 
 ### Q3. Relationship of each positive to the admission of death
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Relationship | Admissions | Patients | Death in a cohort admission | Admission of death with ICU | This admission with ICU | Median days to death | Minimum (days) | Maximum (days) |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -115,7 +115,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q4. Positives contributed by each deceased patient
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Positives per patient | Patients |
 |:---|---:|
@@ -128,7 +128,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q5. Redefinition: death in the same admission
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Deaths in the same admission | With ICU | No ICU | Within the first 24 h |
 |---:|---:|---:|---:|
@@ -138,7 +138,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q6. ICD version of the admissions
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Version in the admission | Admissions | SMM cases | Mortality positives (Model A) | Deliveries detected |
 |:---|---:|---:|---:|---:|
@@ -150,7 +150,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q7. SMM rate by era (per 10,000 deliveries)
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Era | Per 10,000 deliveries |
 |:---|---:|
@@ -172,7 +172,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q8. Deliveries in ICD-9 admissions (proxy)
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Deliveries detected, ICD-10 | ICD-9 admissions with 650 or V27 | Estimated deliveries in total |
 |---:|---:|---:|
@@ -182,13 +182,13 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q9. Patients with SMM
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 **Interpretation.** The 475 SMM admissions correspond to 426 patients, that is, 49 admissions repeat a patient. Patient-level splitting matters, but with less leakage than in mortality.
 
 ### Q10. SMM versus death in the same admission
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Combination | Admissions |
 |:---|---:|
@@ -201,7 +201,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q11. SMM versus the submitted mortality label
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Combination | Admissions |
 |:---|---:|
@@ -214,7 +214,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q12. Inclusion rule: obstetric diagnosis in position 4 or less
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Measure | SQL rule (no position) | With position 4 or less | Difference |
 |:---|---:|---:|---:|
@@ -226,7 +226,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q13. Variable availability by ICU and SMM (% with a value)
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Group | Admissions | Heart rate | Creatinine | Glucose | Lactate | Hemoglobin |
 |:---|---:|---:|---:|---:|---:|---:|
@@ -239,7 +239,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q14. When the first creatinine appears
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Variable | Admissions with a value | Median (hours) | 90th percentile (hours) | First value after 24 h | % after 24 h |
 |:---|---:|---:|---:|---:|---:|
@@ -249,7 +249,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q15. SMM cases by indicator
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Indicator group | Admissions with the indicator | In delivery hospitalization | Outside delivery |
 |:---|---:|---:|---:|
@@ -288,7 +288,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q16. Profile of deaths in the same admission
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Profile | ICD version | Delivery flag | SMM | ICU | Deaths |
 |:---|:---|:---|:---|:---|---:|
@@ -302,7 +302,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q17. Approximate admission year and ICD version
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Approximate year | Admissions | ICD-9 only | ICD-10 only | % ICD-10 | SMM cases | Deliveries (ICD-10) | SMM per 100 ICD-10 admissions |
 |:---|---:|---:|---:|---:|---:|---:|---:|
@@ -330,7 +330,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q18. SMM indicators by anchor-year group
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Indicator group | 2008 - 2010 | 2011 - 2013 | 2014 - 2016 | 2017 - 2019 | 2020 - 2022 |
 |:---|---:|---:|---:|---:|---:|
@@ -346,7 +346,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q19. Distinct indicators per SMM admission (submitted label)
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Distinct indicators | Admissions | In delivery | Outside delivery |
 |:---|---:|---:|---:|
@@ -362,7 +362,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q20. Alternative SMM definitions (submitted label)
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Definition | Admissions | Patients | With ICU |
 |:---|---:|---:|---:|
@@ -377,7 +377,7 @@ _Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en
 
 ### Q21. SMM outside delivery: obstetric chapters (submitted label)
 
-_Source: `sql/05_revision_audit/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
+_Source: `sql/06_audit_counts/` (`audit_counts_en.sql`, `audit_counts_part2_en.sql`, `audit_counts_part3_en.sql`)_
 
 | Chapter of codes present | Admissions |
 |:---|---:|
@@ -1035,7 +1035,7 @@ Consistency checks (all as expected): the 42 delivery hospitalizations not eligi
 
 | Origin | Content |
 |:---|:---|
-| `sql/05_revision_audit/` | Audit Q1 to Q21 on the submitted labels |
+| `sql/06_audit_counts/` | Audit Q1 to Q21 on the submitted labels |
 | `sql/06_revision_labels/` | Official code lists, delivery flag, same-admission labels, cohort rule and death horizons (Q22, Q23, Q-C1 to Q-C7, Q-D1 to Q-D5, Q-E1 to Q-E4) |
 | `sql/07_revision_predictors/` | Predictors with a 24-h window and their availability (Q-F1 to Q-F5); final predictor dictionary and missingness (Q-G0 to Q-G5) |
 | `sql/06_revision_labels/06_smm_death_overlap.sql` | SMM and death in the same admission with the revised labels (Q-H1 to Q-H4) |

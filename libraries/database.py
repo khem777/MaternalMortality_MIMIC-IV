@@ -91,10 +91,8 @@ def get_maternal_cohort_query():
     """
     Returns the SELECT that loads the analysis-ready maternal-mortality
     dataset (mimiciv.cohort_maternal_dataset) into a pandas DataFrame via
-    pd.read_sql(). Row count / positive-outcome count are PENDING
-    reconciliation -- see sql/02_cohort_mortality/maternal_cohort_diagnostic_funnel_en.sql
-    and docs/Limitaciones_Metodologicas_Modelo_Materno.docx before trusting
-    any number this returns.
+    pd.read_sql(). The table is built by
+    sql/02_cohort_mortality/maternal_cohort_dataset_en.sql.
     """
     gdg_cols = ", ".join(GDG_MATERNAL_COLUMNS)
     query = f"""SELECT subject_id, hadm_id, stay_id, dob, age_at_admission, outcome

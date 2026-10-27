@@ -11,7 +11,7 @@
 --       con la bandera revisada (diagnósticos, procedimientos y DRG, ICD-9 e ICD-10).
 -- Definiciones revisadas (lista oficial del CDC en ambas versiones ICD, bandera
 -- de parto, etiquetas en la misma admisión): ver sql/04_labels/. Conteos
--- que comparan las dos versiones: sql/05_revision_audit/ y revision_audit_counts.md.
+-- que comparan las dos versiones: sql/06_audit_counts/ y revision_audit_counts.md.
 -- Solo se editaron comentarios en este archivo; no se cambió ninguna sentencia SQL.
 -- ============================================================================
 

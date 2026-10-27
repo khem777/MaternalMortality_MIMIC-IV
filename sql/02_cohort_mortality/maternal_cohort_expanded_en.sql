@@ -3,7 +3,7 @@
 -- ============================================================================
 -- The header below was written before this script was run. It was later run on
 -- the local database: the submitted manuscript (25,736 obstetric admissions,
--- 15,084 patients) and the audit in sql/05_revision_audit/ are based on it. The
+-- 15,084 patients) and the audit in sql/06_audit_counts/ are based on it. The
 -- revision keeps this cohort and does not apply a position rule (D6); delivery
 -- hospitalizations are identified with sql/04_labels/02_delivery_flag.sql.
 -- The date filter below is commented out and was never applied to this cohort.
@@ -113,10 +113,8 @@ WHERE
              OR icd_code LIKE 'Z37%' OR icd_code LIKE 'Z39%')
     );
 
--- Quick check: how many codes does the expanded view add vs. the narrow one
--- SELECT count(*) FROM mimiciv.pregnancy_diagnoses_expanded;   -- expanded
--- SELECT count(*) FROM mimiciv.pregnancy_diagnoses_narrow;      -- narrow (text only)
---   (see maternal_pregnancy_diagnoses_narrow_en.sql)
+-- Quick check: number of codes in the expanded view
+-- SELECT count(*) FROM mimiciv.pregnancy_diagnoses_expanded;
 
 -- ----------------------------------------------------------------------------
 -- Step 2: expanded cohort (no ICU stay required, no date restriction)

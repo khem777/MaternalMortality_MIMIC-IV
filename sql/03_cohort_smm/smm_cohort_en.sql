@@ -10,7 +10,7 @@
 --       with the revised flag (diagnoses, procedures and DRG, ICD-9 and ICD-10).
 -- Revised definitions (official CDC list in both ICD versions, delivery flag,
 -- same-admission labels): see sql/04_labels/. Counts that compare the
--- two versions: sql/05_revision_audit/ and revision_audit_counts.md.
+-- two versions: sql/06_audit_counts/ and revision_audit_counts.md.
 -- Only comments were edited in this file; no SQL statement was changed.
 -- ============================================================================
 

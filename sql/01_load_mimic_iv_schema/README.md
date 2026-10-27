@@ -21,19 +21,14 @@ of MIMIC-IV:
    diagnoses_icd, etc.).
 2. Download the official MIMIC-IV CSV export from PhysioNet (requires your
    own credentialed access, see the main README) and place the files per
-   the volume mount in `docker-compose.yml`. The `powershell_csv_prep/`
-   scripts in this folder are optional Windows helpers used to merge/order
-   multi-part CSV exports for a couple of large tables before loading —
-   adjust the paths inside them to your own environment, or skip them if
-   your CSV export is already a single file per table.
+   the volume mount in `docker-compose.yml`. If your CSV export comes in
+   several parts for a large table, merge them into a single file per table
+   before loading.
 3. `mimic_load_data_upgrade.sql` — loads the CSVs into the tables created
    in step 1 (server-side `COPY`, so paths are relative to the Postgres
    *container's* filesystem, per the `docker-compose.yml` volume mount).
 4. `mimic_add_indexes.sql` — adds the indexes used by the cohort-extraction
    queries in `sql/02_cohort_mortality/` and `sql/03_cohort_smm/`.
-
-`mimic_generals_query.sql` holds a handful of ad-hoc exploratory queries
-used while validating the schema load; not part of the build sequence.
 
 An alternative, official tool for this same step is
 [MIT-LCP/mimic-code](https://github.com/MIT-LCP/mimic-code), if you prefer
